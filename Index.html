@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MTP Platform — Workflow Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lexend:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#151a2e; --ink-soft:#5b6478; --muted:#8990a3;
+    --primary:#4f46e5; --primary-dark:#3f37c9; --primary-light:#eef0fd; --primary-mid:#c7c4f7;
+    --accent:#0ea5a0;
+    --bg:#f4f5fb; --surface:#ffffff; --border:#e7e8f2; --border-soft:#f0f1f8;
+    --green:#16a366; --green-light:#e5f7ee; --amber:#dd9a1c; --amber-light:#fdf3df;
+    --red:#e0455c; --red-light:#fcebee; --blue:#3a7fe0; --blue-light:#eaf1fd; --purple:#8b5cf6;
+    --shadow-sm:0 1px 2px rgba(21,26,46,.05), 0 1px 1px rgba(21,26,46,.04);
+    --shadow-md:0 4px 14px rgba(21,26,46,.08), 0 1px 3px rgba(21,26,46,.06);
+    --shadow-lg:0 16px 40px rgba(21,26,46,.14), 0 4px 12px rgba(21,26,46,.08);
+    --radius:14px; --radius-sm:9px; --sidebar-w:236px;
+  }
+  *{box-sizing:border-box;}
+  html{scrollbar-width:thin;scrollbar-color:#c7c9dd transparent;}
+  body{margin:0;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;}
+  ::selection{background:var(--primary-mid);}
+  main::-webkit-scrollbar,#sidebar::-webkit-scrollbar{width:6px;}
+  main::-webkit-scrollbar-thumb{background:#d7d9ea;border-radius:6px;}
+
+  /* ---- topbar ---- */
+  #topbar{height:66px;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 26px;position:sticky;top:0;z-index:30;}
+  #topbar .left{display:flex;align-items:center;gap:18px;}
+  #topbar .greet{font-weight:700;font-size:15.5px;letter-spacing:-.01em;}
+  #topbar .greet span{color:var(--ink-soft);font-weight:500;font-size:12.5px;display:block;margin-top:1px;}
+  .searchbox{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:8px 14px;width:270px;color:var(--muted);transition:border-color .15s,box-shadow .15s;}
+  .searchbox:focus-within{border-color:var(--primary-mid);box-shadow:0 0 0 3px var(--primary-light);}
+  .searchbox svg{flex-shrink:0;}
+  .searchbox input{border:none;background:none;outline:none;font-size:13px;font-family:inherit;width:100%;color:var(--ink);}
+  #topbar .right{display:flex;align-items:center;gap:18px;}
+  .iconbtn{position:relative;width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--ink-soft);cursor:pointer;transition:background .15s;}
+  .iconbtn:hover{background:var(--bg);}
+  .iconbtn .dot{position:absolute;top:7px;right:8px;width:7px;height:7px;background:var(--red);border:2px solid #fff;border-radius:50%;}
+  .userchip{display:flex;align-items:center;gap:10px;padding:4px 6px 4px 4px;border-radius:12px;cursor:pointer;transition:background .15s;}
+  .userchip:hover{background:var(--bg);}
+  .avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--amber),var(--primary));flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;box-shadow:var(--shadow-sm);}
+  .userchip .who{font-size:12.5px;line-height:1.35;}
+  .userchip .who b{display:block;font-size:13px;}
+  .userchip .who span{color:var(--muted);font-size:11.5px;}
+
+  /* ---- layout ---- */
+  #body{display:flex;min-height:calc(100vh - 66px);}
+  #sidebar{width:var(--sidebar-w);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:20px 14px;gap:2px;position:sticky;top:66px;height:calc(100vh - 66px);overflow-y:auto;flex-shrink:0;}
+  .brand{display:flex;align-items:center;gap:10px;padding:2px 8px 20px 8px;}
+  .brand .mark{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:14px;font-family:'Lexend',sans-serif;flex-shrink:0;}
+  .brand .name{font-family:'Lexend',sans-serif;font-weight:700;font-size:15px;letter-spacing:-.01em;}
+  .navsec{font-size:10.5px;font-weight:700;letter-spacing:.07em;color:var(--muted);text-transform:uppercase;margin:14px 8px 6px 8px;}
+  .navsec:first-of-type{margin-top:2px;}
+  .navicon{position:relative;display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:10px;font-size:13.5px;font-weight:600;cursor:pointer;color:var(--ink-soft);transition:background .15s,color .15s;}
+  .navicon svg{flex-shrink:0;opacity:.85;}
+  .navicon:hover{background:var(--bg);color:var(--ink);}
+  .navicon.active{background:var(--primary-light);color:var(--primary-dark);}
+  .navicon.active svg{opacity:1;}
+  .navicon.active::before{content:"";position:absolute;left:-14px;top:8px;bottom:8px;width:3px;border-radius:3px;background:var(--primary);}
+  .navicon.disabled{opacity:.4;cursor:not-allowed;}
+
+  main{flex:1;padding:30px 38px 60px;max-width:1240px;animation:fadeUp .28s ease;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+  .crumb{color:var(--muted);font-size:12.5px;margin-bottom:8px;font-weight:500;}
+  h1{font-family:'Lexend',sans-serif;font-size:23px;font-weight:700;letter-spacing:-.015em;margin:0 0 20px 0;}
+  h3{margin:0 0 12px 0;font-size:14.5px;font-weight:700;letter-spacing:-.005em;}
+
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px;margin-bottom:20px;box-shadow:var(--shadow-sm);}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+  .dashgrid{display:grid;grid-template-columns:2fr 1fr;gap:20px;align-items:start;}
+
+  .promo{position:relative;overflow:hidden;border-radius:var(--radius);padding:24px;color:#fff;background:linear-gradient(135deg,var(--primary-dark),var(--primary));cursor:pointer;transition:transform .18s ease,box-shadow .18s ease;box-shadow:var(--shadow-md);}
+  .promo::after{content:"";position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.08);}
+  .promo:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);}
+  .promo .picn{width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;margin-bottom:14px;}
+  .promo h3{margin:0 0 6px 0;font-size:16.5px;color:#fff;font-family:'Lexend',sans-serif;}
+  .promo p{margin:0 0 16px 0;font-size:13px;opacity:.88;line-height:1.5;}
+
+  .btn{background:var(--primary);color:#fff;border:none;padding:10px 18px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:7px;transition:background .15s,transform .1s,box-shadow .15s;box-shadow:0 1px 2px rgba(79,70,229,.25);}
+  .btn:hover{background:var(--primary-dark);}
+  .btn:active{transform:translateY(1px);}
+  .btn.ghost{background:var(--surface);color:var(--primary);border:1px solid var(--border);box-shadow:none;}
+  .btn.ghost:hover{background:var(--primary-light);border-color:var(--primary-mid);}
+  .btn.small{padding:7px 13px;font-size:12px;}
+  .btn.green{background:var(--green);box-shadow:0 1px 2px rgba(22,163,102,.25);}
+  .btn.green:hover{background:#128052;}
+  .btn.amber{background:var(--amber);box-shadow:0 1px 2px rgba(221,154,28,.25);}
+  .btn.amber:hover{background:#c1850f;}
+  .btn:disabled{background:#e2e4ef;color:#a9adc2;cursor:not-allowed;box-shadow:none;}
+
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  th{text-align:left;color:var(--ink-soft);font-weight:700;font-size:11.5px;letter-spacing:.03em;text-transform:uppercase;padding:11px 10px;border-bottom:1px solid var(--border);background:var(--bg);}
+  th:first-child{border-radius:8px 0 0 8px;}
+  th:last-child{border-radius:0 8px 8px 0;}
+  td{padding:13px 10px;border-bottom:1px solid var(--border-soft);vertical-align:top;}
+  tr:last-child td{border-bottom:none;}
+  tbody tr:hover td, table tr:hover td{background:var(--bg);}
+
+  .pill{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.01em;}
+  .pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;}
+  .pill.pending{background:var(--amber-light);color:var(--amber);}
+  .pill.review{background:var(--blue-light);color:var(--blue);}
+  .pill.approved{background:var(--green-light);color:var(--green);}
+  .pill.open{background:var(--blue-light);color:var(--blue);}
+  .pill.close{background:var(--red-light);color:var(--red);}
+
+  .tabs{display:flex;gap:4px;margin-bottom:16px;flex-wrap:wrap;background:var(--bg);padding:4px;border-radius:11px;width:fit-content;}
+  .tab{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;color:var(--ink-soft);transition:background .15s,color .15s;}
+  .tab:hover{color:var(--ink);}
+  .tab.active{background:var(--surface);color:var(--primary-dark);box-shadow:var(--shadow-sm);}
+
+  .steps{font-size:12px;color:var(--ink-soft);}
+  .stepnote{background:var(--primary-light);border:1px solid var(--primary-mid);border-radius:var(--radius-sm);padding:12px 16px;font-size:12.5px;color:var(--primary-dark);margin-bottom:18px;display:flex;gap:10px;align-items:flex-start;line-height:1.5;}
+  .stepnote svg{flex-shrink:0;margin-top:1px;}
+
+  .jobcard{background:var(--bg);border:1px solid var(--border-soft);border-radius:var(--radius-sm);padding:18px;margin-bottom:14px;transition:box-shadow .15s;}
+  .jobcard:hover{box-shadow:var(--shadow-sm);}
+  .jobcard h4{margin:0 0 6px 0;font-size:14px;}
+  .jobcard .meta{font-size:12.5px;color:var(--ink-soft);margin-bottom:12px;line-height:1.5;}
+
+  .overlay{position:fixed;inset:0;background:rgba(21,26,46,.45);backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;z-index:50;animation:fadeIn .15s ease;}
+  @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+  .modal{background:#fff;border-radius:18px;padding:28px;width:440px;max-width:90vw;box-shadow:var(--shadow-lg);animation:modalPop .18s cubic-bezier(.2,.9,.3,1.2);max-height:88vh;overflow-y:auto;}
+  @keyframes modalPop{from{opacity:0;transform:scale(.96) translateY(6px);}to{opacity:1;transform:scale(1) translateY(0);}}
+  .modal h3{margin-top:0;font-size:17px;}
+  .field{margin-bottom:15px;}
+  .field label{display:block;font-size:12px;font-weight:700;margin-bottom:6px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;}
+  .field input,.field select,.field textarea{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:9px;font-size:13.5px;font-family:inherit;background:var(--bg);transition:border-color .15s,box-shadow .15s,background .15s;}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--primary);background:#fff;box-shadow:0 0 0 3px var(--primary-light);}
+  .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;}
+  .backbtn{background:none;border:none;color:var(--ink-soft);font-size:13px;cursor:pointer;font-weight:600;margin-bottom:16px;padding:0;display:inline-flex;align-items:center;gap:6px;transition:color .15s;}
+  .backbtn:hover{color:var(--primary);}
+  .candrow{display:flex;justify-content:space-between;align-items:center;padding:13px 4px;border-bottom:1px solid var(--border-soft);}
+  .candrow:last-child{border-bottom:none;}
+  .toast{position:fixed;bottom:26px;right:26px;background:var(--ink);color:#fff;padding:13px 20px;border-radius:12px;font-size:13px;font-weight:500;z-index:60;box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:10px;animation:toastIn .25s cubic-bezier(.2,.9,.3,1.2);}
+  @keyframes toastIn{from{opacity:0;transform:translateY(10px) scale(.97);}to{opacity:1;transform:translateY(0) scale(1);}}
+  .toast::before{content:"✓";display:flex;align-items:center;justify-content:center;width:18px;height:18px;background:var(--green);border-radius:50%;font-size:11px;flex-shrink:0;}
+
+  /* dashboard extras */
+  .statcard{display:flex;flex-direction:column;gap:10px;}
+  .statcard .icn{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;}
+  .statcard .num{font-size:30px;font-weight:800;font-family:'Lexend',sans-serif;letter-spacing:-.02em;}
+  .statcard .lbl{color:var(--ink-soft);font-size:12.5px;font-weight:600;}
+  .reqrow{padding:13px 4px;border-bottom:1px solid var(--border-soft);font-size:13px;cursor:pointer;border-radius:8px;transition:background .15s;}
+  .reqrow:hover{background:var(--bg);}
+  .reqrow:last-child{border-bottom:none;}
+  .reqrow .meta{color:var(--muted);font-size:12px;margin-top:2px;}
+  .retstat{display:flex;flex-wrap:wrap;gap:20px;margin-top:14px;}
+  .retstat div{min-width:70px;}
+  .retstat .n{font-weight:800;font-size:19px;font-family:'Lexend',sans-serif;}
+  .retstat .l{font-size:11.5px;color:var(--ink-soft);font-weight:600;margin-top:2px;}
+  .barchart{display:flex;align-items:flex-end;gap:16px;height:150px;margin-top:28px;padding-bottom:22px;position:relative;}
+  .barchart .bar{width:26px;background:linear-gradient(180deg,var(--primary),var(--primary-dark));border-radius:6px 6px 2px 2px;position:relative;}
+  .barchart .bar .lbl{position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);font-size:10.5px;color:var(--ink-soft);white-space:nowrap;font-weight:500;}
+
+  /* pies */
+  .piewrap{display:flex;align-items:center;gap:22px;}
+  .pie{width:150px;height:150px;border-radius:50%;flex-shrink:0;box-shadow:inset 0 0 0 30px #fff,0 0 0 1px var(--border-soft);}
+  .legend .item{display:flex;align-items:center;gap:7px;margin-bottom:6px;font-size:12.5px;font-weight:500;}
+  .swatch{width:9px;height:9px;border-radius:3px;display:inline-block;flex-shrink:0;}
+
+  /* calendar */
+  .calnav{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+  .calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+  .calhead{background:var(--bg);padding:9px;font-size:11.5px;font-weight:700;color:var(--ink-soft);text-align:center;text-transform:uppercase;letter-spacing:.03em;}
+  .calcell{background:#fff;min-height:90px;padding:7px;font-size:11.5px;cursor:pointer;transition:background .15s;}
+  .calcell:hover{background:var(--primary-light);}
+  .calcell.out{color:#c7c9dd;background:#fbfbfd;}
+  .calcell .daynum{font-weight:700;color:var(--ink-soft);margin-bottom:4px;font-size:12px;}
+  .evbar{border-radius:5px;padding:2px 6px;font-size:10px;margin-bottom:3px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500;}
+
+  /* attendance */
+  .attheader{background:var(--primary-light);border-radius:var(--radius-sm);padding:16px 20px;display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
+  .attrow{border:1px solid var(--border-soft);border-radius:var(--radius-sm);padding:15px 18px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:18px;transition:box-shadow .15s;}
+  .attrow:hover{box-shadow:var(--shadow-sm);}
+  .atttrack{flex:1;height:8px;background:var(--border);border-radius:4px;position:relative;}
+  .attfill{position:absolute;left:0;top:0;height:100%;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:4px;}
+  .attmeta{min-width:150px;font-size:12.5px;}
+  .attmeta b{display:block;margin-bottom:2px;}
+
+  /* kanban */
+  .kanban{display:flex;gap:16px;overflow-x:auto;padding-bottom:10px;}
+  .kancol{min-width:250px;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border-soft);flex-shrink:0;}
+  .kancol-head{background:var(--surface);color:var(--ink);border-bottom:2px solid var(--primary);padding:12px 15px;border-radius:var(--radius-sm) var(--radius-sm) 0 0;font-weight:700;display:flex;justify-content:space-between;font-size:13px;}
+  .kancol-head span:last-child{background:var(--primary-light);color:var(--primary-dark);border-radius:20px;padding:1px 9px;font-size:11.5px;}
+  .kancard{background:#fff;margin:11px;padding:13px;border-radius:10px;font-size:12.5px;box-shadow:var(--shadow-sm);border:1px solid var(--border-soft);transition:box-shadow .15s,transform .15s;}
+  .kancard:hover{box-shadow:var(--shadow-md);transform:translateY(-1px);}
+  .kancard .tags span{display:inline-block;background:var(--primary-light);color:var(--primary-dark);padding:2px 9px;border-radius:10px;font-size:10px;font-weight:600;margin-right:4px;margin-bottom:4px;}
+  .kancard .name{font-weight:700;margin:5px 0;font-size:13.5px;}
+  .kancard .loc{color:var(--ink-soft);font-size:11.5px;margin-bottom:6px;}
+
+  /* feed */
+  .feedwrap{display:flex;gap:22px;align-items:flex-start;}
+  .feedmain{flex:1;}
+  .groups{width:260px;flex-shrink:0;}
+  .grouprow{display:flex;align-items:center;gap:11px;padding:11px 4px;border-bottom:1px solid var(--border-soft);font-size:13px;font-weight:500;}
+  .groupavatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));flex-shrink:0;}
+  .postimg{background:linear-gradient(135deg,var(--primary-light),#e3f7f2);border-radius:var(--radius-sm);height:170px;display:flex;align-items:center;justify-content:center;font-size:46px;margin:14px 0;}
+  .postactions{display:flex;gap:22px;font-size:13px;color:var(--ink-soft);border-top:1px solid var(--border-soft);padding-top:12px;font-weight:500;}
+  .postactions span{cursor:pointer;transition:color .15s;}
+  .postactions span:hover{color:var(--primary);}
+  .commentbox{display:flex;gap:9px;margin-top:12px;}
+  .commentbox input{flex:1;padding:9px 12px;border:1px solid var(--border);border-radius:9px;font-size:12.5px;font-family:inherit;background:var(--bg);}
+  .commentitem{font-size:12.5px;padding:8px 2px;color:var(--ink-soft);border-top:1px solid var(--border-soft);}
+</style>
+</head>
+<body>
+<div id="topbar">
+  <div class="left">
+    <div class="greet">Welcome back, Anum<span>MTP Platform · Workforce Suite</span></div>
+    <div class="searchbox">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input placeholder="Search people, requests, records…">
+    </div>
+  </div>
+  <div class="right">
+    <div class="iconbtn" title="Notifications" onclick="toast('You are all caught up')">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span class="dot"></span>
+    </div>
+    <div class="userchip">
+      <div class="avatar">AA</div>
+      <div class="who"><b>Anum</b><span>Portfolio &amp; Delivery Lead</span></div>
+    </div>
+  </div>
+</div>
+<div id="body">
+  <div id="sidebar"></div>
+  <main id="content"></main>
+</div>
+<div id="modalRoot"></div>
+
+<script>
+const PIE_COLORS = ['#4f46e5','#3a7fe0','#0ea5a0','#16a366','#8b5cf6','#dd9a1c','#c9d6e3'];
+const ICONS = {
+  dashboard:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>',
+  requests:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6l1 3H8l1-3Z"/><rect x="5" y="5" width="14" height="17" rx="2"/><path d="M9 12h6M9 16h6"/></svg>',
+  employees:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+  reports:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg>',
+  calendar:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>',
+  insurance:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 3 6v6c0 5 3.5 8.5 9 10 5.5-1.5 9-5 9-10V6l-9-4Z"/><path d="m9 12 2 2 4-4"/></svg>',
+  recruit:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16M2 13h20"/></svg>',
+  pipeline:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg>',
+  attendance:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>',
+  feed:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-9 8.4A8.5 8.5 0 1 1 21 11.5Z"/></svg>',
+  settings:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09A1.65 1.65 0 0 0 15 4.6a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>',
+  survey:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>',
+  chevron:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>',
+  info:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>'
+};
+
+const state = {
+  section: 'dashboard',
+  leave: { rows: [], nextId: 1 },
+  recruit: {
+    jobs: [
+      {id:1, title:'PM', status:'OPEN', desc:'Testing purpose only.', candidates:[
+        {name:'Sara Khan', status:'New'},{name:'Omar Siddiqui', status:'New'},{name:'Layla Hussain', status:'New'}
+      ]},
+      {id:2, title:'SQAE', status:'OPEN', desc:'Testing purpose', candidates:[
+        {name:'Fatima Noor', status:'New'},{name:'Ahmed Raza', status:'New'}
+      ]}
+    ],
+    nextId: 3, viewingJobId: null
+  },
+  insurance: {
+    policies: [
+      {type:'Life', provider:'Other', premium:'159,023', policy:'AZI2213', renewal:'Sep 10, 2025', dot:'red'},
+      {type:'Travel', provider:'—', premium:'4,567,890', policy:'56789', renewal:'Sep 10, 2025', dot:'red'},
+      {type:'Life', provider:'—', premium:'0', policy:'—', renewal:'Sep 10, 2025', dot:'red'},
+      {type:'Health', provider:'—', premium:'12', policy:'3232', renewal:'Sep 18, 2025', dot:'red'},
+      {type:'Health', provider:'—', premium:'50', policy:'aaassdfg123', renewal:'May 13, 2027', dot:'green'}
+    ],
+    endorsements: [], endorseNextId: 1
+  },
+  calendar: {
+    year:2026, month:4, // May 2026 (0-indexed)
+    events: [
+      {date:'2026-05-01', label:'ABC Mahin Atique On Paid Leave', color:'#3fa66b'},
+      {date:'2026-05-02', label:'ABC Mahin Atique On Paid Leave', color:'#3fa66b'},
+      {date:'2026-05-04', label:'ABC Mahin Atique On Paid Leave', color:'#3fa66b'},
+      {date:'2026-05-05', label:'Pending Maternity For Mahin', color:'#e0a63a'},
+      {date:'2026-05-06', label:'Pending Paternity For Mahin', color:'#e0a63a'},
+      {date:'2026-05-04b', label:'Pending Unpaid For Mahin', color:'#e05252'},
+      {date:'2026-05-05b', label:'Pending Sick For Mahin', color:'#7c6fe0'}
+    ]
+  },
+  attendance: {
+    checkedIn:false,
+    days:[
+      {day:'Sat, 08 June', checkin:'--', checkout:'--', hours:'--', pct:0, late:''},
+      {day:'Mon, 09 June', checkin:'09:02 AM', checkout:'08:30 PM', hours:'8:30 hrs', pct:85, late:'00:02'},
+      {day:'Tue, 10 June', checkin:'09:02 AM', checkout:'08:30 PM', hours:'8:00 hrs', pct:80, late:''},
+      {day:'Wed, 11 June', checkin:'09:00 AM', checkout:'08:30 PM', hours:'8:30 hrs', pct:85, late:'01:02'}
+    ]
+  },
+  pipeline: {
+    stages: ['Screening','Shortlisted','Initial Interview','Technical Interview'],
+    candidates: [
+      {id:1,name:'Racheal Joe', role:'UI/UX Designer', tags:['Developer','Frontend'], location:'Dubai, UAE', notice:'1 month', exp:'4+ years', stage:0},
+      {id:2,name:'Omar Faruk', role:'UI/UX Designer', tags:['Developer','Frontend'], location:'Dubai, UAE', notice:'2 weeks', exp:'3+ years', stage:0},
+      {id:3,name:'Sara Khan', role:'SQA Analyst', tags:['QA'], location:'Lahore, PK', notice:'1 month', exp:'2+ years', stage:1},
+      {id:4,name:'Bilal Ahmed', role:'Developer', tags:['Backend'], location:'Remote', notice:'Immediate', exp:'5+ years', stage:2}
+    ]
+  },
+  feed: {
+    draft:'',
+    posts:[ {id:1, likes:0, comments:[], commentDraft:''} ],
+    groups:[
+      {name:'Test Department', members:6},
+      {name:'Cool', members:4},
+      {name:'Delivery Team', members:2},
+      {name:'New test dept 2', members:1},
+      {name:'New test dept', members:0},
+      {name:'Test 1', members:1}
+    ]
+  },
+  employees: {
+    query:'',
+    list:[
+      {name:'000A Bcd', title:'', role:'C-Level', dept:'Cool', mobile:'', email:'mahin1@gmail.com'},
+      {name:'001 Mahin Atique', title:'', role:'C-Level', dept:'', mobile:'', email:'m43@gmail.com'},
+      {name:'ADemoo Role', title:'', role:'HR Administrator', dept:'Cool', mobile:'', email:'ademo123@mailinator.com'},
+      {name:'Anum Aaaa Edit MTPe', title:'Project Manager', role:'HR Manager', dept:'', mobile:'900786015', email:'anum.abdullah@mtp.tech'},
+      {name:'Bachar Helamieh', title:'Agent', role:'Employee', dept:'', mobile:'00971 52 382 2315', email:'bachar@luxbridgerealty.com'},
+      {name:'Bismaa Suleman', title:'123', role:'HR Administrator', dept:'', mobile:'', email:'bisma.suleman@mtp.tech'}
+    ],
+    nextId:1
+  },
+  settings: {
+    org: {name:'Mtp Test', website:'https://www.youtube.co', employees:150, industry:'Aerospace and defense',
+      email:'mtp@gmail.com', address:'mtp 70D E', phone:'3494999', currency:'ARS',
+      workStart:'06:02 pm', workEnd:'10:00 pm', payrollDate:'28'}
+  },
+  survey: {
+    activeTab:'active',
+    viewingId: null,
+    surveys:[
+      {id:1, title:'Employee Engagement Q3', status:'Active', responses:88, total:150, created:'Jul 01, 2026',
+        questions:[
+          {text:'How satisfied are you with your role?', options:[
+            {label:'Very satisfied', count:31},{label:'Satisfied', count:38},{label:'Neutral', count:12},{label:'Dissatisfied', count:5},{label:'Very dissatisfied', count:2}
+          ]},
+          {text:'Do you feel recognized for your work?', options:[
+            {label:'Yes, often', count:29},{label:'Sometimes', count:41},{label:'Rarely', count:14},{label:'Never', count:4}
+          ]},
+          {text:'How likely are you to recommend us as a place to work?', options:[
+            {label:'9-10 (Promoter)', count:40},{label:'7-8 (Passive)', count:33},{label:'0-6 (Detractor)', count:15}
+          ]}
+        ]},
+      {id:2, title:'Manager Effectiveness Pulse', status:'Active', responses:34, total:60, created:'Jul 10, 2026',
+        questions:[
+          {text:'My manager gives me clear feedback', options:[
+            {label:'Strongly agree', count:12},{label:'Agree', count:14},{label:'Neutral', count:5},{label:'Disagree', count:3}
+          ]},
+          {text:'I feel supported in my career growth', options:[
+            {label:'Strongly agree', count:9},{label:'Agree', count:15},{label:'Neutral', count:7},{label:'Disagree', count:3}
+          ]}
+        ]},
+      {id:3, title:'Onboarding Experience', status:'Draft', responses:0, total:0, created:'—', questions:[]},
+      {id:4, title:'2025 Year-End Culture Survey', status:'Closed', responses:141, total:150, created:'Dec 12, 2025',
+        questions:[
+          {text:'Our culture reflects our stated values', options:[
+            {label:'Strongly agree', count:52},{label:'Agree', count:61},{label:'Neutral', count:19},{label:'Disagree', count:9}
+          ]},
+          {text:'I have the tools I need to do my job well', options:[
+            {label:'Strongly agree', count:48},{label:'Agree', count:66},{label:'Neutral', count:20},{label:'Disagree', count:7}
+          ]},
+          {text:'I see myself here in 2 years', options:[
+            {label:'Definitely', count:70},{label:'Probably', count:47},{label:'Not sure', count:18},{label:'Unlikely', count:6}
+          ]}
+        ]}
+    ],
+    nextId:5
+  }
+};
+
+function el(html){ const d=document.createElement('div'); d.innerHTML=html.trim(); return d.firstChild; }
+function setSection(s){ state.section=s; render(); }
+function toast(msg){
+  const t = el(`<div class="toast">${msg}</div>`);
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(), 2400);
+}
+function openModal(html){ document.getElementById('modalRoot').innerHTML = `<div class="overlay" onclick="if(event.target===this)closeModal()"><div class="modal">${html}</div></div>`; }
+function closeModal(){ document.getElementById('modalRoot').innerHTML=''; }
+
+/* ---------- SIDEBAR ---------- */
+function renderSidebar(){
+  const groups = [
+    {label:'Overview', items:[
+      {k:'dashboard', label:'Dashboard'},
+      {k:'reports', label:'Reports'},
+      {k:'calendar', label:'Calendar'},
+    ]},
+    {label:'People', items:[
+      {k:'employees', label:'Employees'},
+      {k:'requests', label:'Requests'},
+      {k:'attendance', label:'Attendance'},
+      {k:'insurance', label:'Insurance'},
+    ]},
+    {label:'Talent', items:[
+      {k:'recruit', label:'Job Posts'},
+      {k:'pipeline', label:'Recruitment Feed'},
+    ]},
+    {label:'Engage', items:[
+      {k:'feed', label:'Announcements'},
+      {k:'survey', label:'Survey Management'},
+    ]},
+    {label:'Workspace', items:[
+      {k:'settings', label:'Settings'},
+    ]},
+  ];
+  const nav = groups.map(g=>`
+    <div class="navsec">${g.label}</div>
+    ${g.items.map(i=>`
+      <div class="navicon ${state.section===i.k?'active':''}" title="${i.label}" onclick="setSection('${i.k}')">
+        ${ICONS[i.k]}<span>${i.label}</span>
+      </div>`).join('')}
+  `).join('');
+  document.getElementById('sidebar').innerHTML = `
+    <div class="brand"><div class="mark">M</div><div class="name">MTP&nbsp;Platform</div></div>
+    ${nav}
+  `;
+}
+
+/* ---------- DASHBOARD ---------- */
+function renderDashboard(){
+  const reqs = [
+    {who:'Mahin Atique Emp.Manager', what:"shift swap with 000A Bcd: NT to San-fixed for Jun 11, 2026", when:'a month ago · 12:32 PM'},
+    {who:'Mahin Atique Emp.Manager', what:"shift swap with 000A Bcd: NT to San-fixed for Jun 08, 2026", when:'2 months ago · 11:26 AM'},
+    {who:'Mahin Atique Emp.Manager', what:"leave for May 11, 2026 - May 11, 2026", when:'2 months ago · 02:15 PM'},
+    {who:'Mahin Atique Emp.Manager', what:"leave for May 07, 2026 - May 07, 2026", when:'2 months ago · 02:12 PM'},
+  ];
+  const reqRows = reqs.map(r=>`<div class="reqrow" onclick="toast('Opening request…')"><b>${r.who}'s</b> ${r.what}<div class="meta">${r.when}</div></div>`).join('');
+  const headcount = [
+    {l:'Cool', v:6},{l:'Development', v:1},{l:'Dubai office', v:1},{l:'Mahin Test', v:1},
+    {l:'New Office', v:1},{l:'TEST ABC', v:1},{l:'Zhang San', v:3},{l:'Office (not set)', v:135}
+  ];
+  const max = Math.max(...headcount.map(h=>h.v));
+  const bars = headcount.map(h=>`<div class="bar" style="height:${Math.max((h.v/max*120),3)}px;"><span class="lbl">${h.l}</span></div>`).join('');
+
+  const cake='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7"/><path d="M4 16.5a3 3 0 0 0 4 0 3 3 0 0 1 4 0 3 3 0 0 0 4 0 3 3 0 0 1 4 0"/><path d="M12 8V4M9 4h6"/></svg>';
+  const person='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-6 8-6s8 2 8 6"/></svg>';
+  const clock='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>';
+  const suitcase='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>';
+  const shield='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 3 6v6c0 5 3.5 8.5 9 10 5.5-1.5 9-5 9-10V6l-9-4Z"/></svg>';
+
+  return `
+    <div class="crumb">Home</div>
+    <h1>Dashboard</h1>
+    <div class="dashgrid">
+      <div>
+        <div class="grid2">
+          <div class="card statcard"><div class="icn" style="background:var(--primary-light);color:var(--primary-dark);">${person}</div><div class="num">00</div><div class="lbl">Leaves Today</div></div>
+          <div class="card statcard"><div class="icn" style="background:var(--amber-light);color:var(--amber);">${cake}</div><div class="num">00</div><div class="lbl">Birthdays Today</div></div>
+        </div>
+        <div class="card">
+          <h3>Pending Requests</h3>
+          ${reqRows}
+        </div>
+        <div class="card">
+          <h3>Headcount by Office / Team</h3>
+          <div class="barchart">${bars}</div>
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <h3>Retention Rate (Current Month)</h3>
+          <div class="retstat">
+            <div><div class="n">99.31%</div><div class="l">Retention</div></div>
+            <div><div class="n">2</div><div class="l">Joined</div></div>
+            <div><div class="n">1</div><div class="l">Left</div></div>
+            <div><div class="n">1</div><div class="l">Change</div></div>
+            <div><div class="n">144</div><div class="l">Total</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Upcoming Events</h3>
+          <p style="color:var(--muted);font-size:13px;margin:0;">You don't have events today.</p>
+        </div>
+      </div>
+    </div>
+
+    <h1 style="margin-top:10px;">Try the interactive demos</h1>
+    <div class="grid3">
+      <div class="promo" onclick="setSection('requests')">
+        <div class="picn">${clock}</div>
+        <h3>Leave Request</h3>
+        <p>Submit → Manager approval → HR approval.</p>
+        <div class="btn ghost" style="background:rgba(255,255,255,.16);color:#fff;border-color:rgba(255,255,255,.4);">Start demo →</div>
+      </div>
+      <div class="promo" style="background:linear-gradient(135deg,var(--primary-dark),var(--accent));" onclick="setSection('recruit')">
+        <div class="picn">${suitcase}</div>
+        <h3>Recruitment</h3>
+        <p>Create a job post → view candidates → shortlist.</p>
+        <div class="btn ghost" style="background:rgba(255,255,255,.16);color:#fff;border-color:rgba(255,255,255,.4);">Start demo →</div>
+      </div>
+      <div class="promo" style="background:linear-gradient(135deg,var(--primary-dark),var(--amber));" onclick="setSection('insurance')">
+        <div class="picn">${shield}</div>
+        <h3>Insurance</h3>
+        <p>Add a policy → submit a medical endorsement.</p>
+        <div class="btn ghost" style="background:rgba(255,255,255,.16);color:#fff;border-color:rgba(255,255,255,.4);">Start demo →</div>
+      </div>
+    </div>
+  `;
+}
+
+/* ---------- LEAVE / REQUESTS WORKFLOW ---------- */
+function renderRequests(){
+  const L = state.leave;
+  const rows = L.rows.map(r=>{
+    let stepLabel, actionBtn;
+    if(r.stage==='manager'){
+      stepLabel = `<span class="pill pending">Awaiting Manager Approval</span>`;
+      actionBtn = `<button class="btn small" onclick="leaveAdvance(${r.id})">Approve (Manager)</button>`;
+    } else if(r.stage==='hr'){
+      stepLabel = `<span class="pill review">Awaiting HR Approval</span>`;
+      actionBtn = `<button class="btn small green" onclick="leaveAdvance(${r.id})">Approve (HR)</button>`;
+    } else {
+      stepLabel = `<span class="pill approved">Approved</span>`;
+      actionBtn = `—`;
+    }
+    return `<tr>
+      <td>Leave: ${r.type}</td>
+      <td>${r.from} → ${r.to}</td>
+      <td>${r.purpose}</td>
+      <td>Manager Approval &gt; HR Approval</td>
+      <td>${stepLabel}</td>
+      <td>${actionBtn}</td>
+    </tr>`;
+  }).join('') || `<tr><td colspan="6" style="color:#8a95a5;text-align:center;padding:24px;">No requests yet — submit one below.</td></tr>`;
+
+  return `
+    <div class="crumb">Home / Requests</div>
+    <button class="backbtn" onclick="setSection('dashboard')">← Back to demo menu</button>
+    <h1>Submit a new request</h1>
+    <div class="stepnote">${ICONS.info}Step 1: click <b>Request Leave</b> to open the form. Step 2: submit it. Step 3: click through Manager → HR approval on the row that appears below.</div>
+    <div class="card">
+      <div style="display:flex;gap:10px;margin-bottom:18px;">
+        <button class="btn" onclick="openLeaveModal()">Request Leave</button>
+        <button class="btn ghost" disabled>Request Document</button>
+        <button class="btn ghost" disabled>Request Expense</button>
+        <button class="btn ghost" disabled>Shift Swapping Request</button>
+      </div>
+      <h3>Outgoing Requests</h3>
+      <table>
+        <tr><th>Process</th><th>Dates</th><th>Purpose</th><th>Steps to Success</th><th>Status</th><th>Action</th></tr>
+        ${rows}
+      </table>
+    </div>
+  `;
+}
+function openLeaveModal(){
+  openModal(`
+    <h3>Request Leave</h3>
+    <div class="field"><label>Leave Type</label>
+      <select id="lf_type"><option>Sick</option><option>Unpaid</option><option>Maternity</option><option>Paternity</option><option>Work from home</option></select>
+    </div>
+    <div class="field"><label>From</label><input type="date" id="lf_from" value="2026-08-03"></div>
+    <div class="field"><label>To</label><input type="date" id="lf_to" value="2026-08-04"></div>
+    <div class="field"><label>Purpose</label><textarea id="lf_purpose" rows="2">Family event</textarea></div>
+    <div class="modal-actions">
+      <button class="btn ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn" onclick="submitLeave()">Submit Request</button>
+    </div>
+  `);
+}
+function submitLeave(){
+  const type = document.getElementById('lf_type').value;
+  const from = document.getElementById('lf_from').value;
+  const to = document.getElementById('lf_to').value;
+  const purpose = document.getElementById('lf_purpose').value || '—';
+  state.leave.rows.push({ id: state.leave.nextId++, type, from, to, purpose, stage:'manager' });
+  closeModal();
+  toast('Leave request submitted — now awaiting Manager Approval');
+  render();
+}
+function leaveAdvance(id){
+  const r = state.leave.rows.find(x=>x.id===id);
+  if(r.stage==='manager'){ r.stage='hr'; toast('Manager approved — now awaiting HR Approval'); }
+  else if(r.stage==='hr'){ r.stage='approved'; toast('HR approved — request is now Approved ✅'); }
+  render();
+}
+
+/* ---------- RECRUITMENT (JOB POSTS) WORKFLOW ---------- */
+function renderRecruit(){
+  const R = state.recruit;
+  if(R.viewingJobId){
+    const job = R.jobs.find(j=>j.id===R.viewingJobId);
+    const cands = job.candidates.map((c,i)=>`
+      <div class="candrow">
+        <div><b>${c.name}</b><div style="font-size:12px;color:#8a95a5;">Applied for ${job.title}</div></div>
+        <div>
+          ${c.status==='Shortlisted'
+            ? `<span class="pill approved">Shortlisted</span>`
+            : `<button class="btn small" onclick="shortlistCandidate(${job.id},${i})">Shortlist</button>`}
+        </div>
+      </div>`).join('');
+    return `
+      <div class="crumb">Home / Job Posts / ${job.title}</div>
+      <button class="backbtn" onclick="R_back()">← Back to job posts</button>
+      <h1>Candidates — ${job.title}</h1>
+      <div class="stepnote">${ICONS.info}Step 3: shortlist a candidate for this role.</div>
+      <div class="card">${cands}</div>
+    `;
+  }
+  const jobcards = R.jobs.map(j=>`
+    <div class="jobcard">
+      <div style="display:flex;justify-content:space-between;">
+        <h4>${j.title}</h4><span class="pill open">${j.status}</span>
+      </div>
+      <div class="meta">${j.desc}<br>Hiring Manager: Anum Aaaa Edit MTPe</div>
+      <button class="btn small" onclick="viewCandidates(${j.id})">View Candidates (${j.candidates.length})</button>
+    </div>
+  `).join('');
+  return `
+    <div class="crumb">Home / Job Posts</div>
+    <button class="backbtn" onclick="setSection('dashboard')">← Back to demo menu</button>
+    <h1>Manage Job Posts</h1>
+    <div class="stepnote">${ICONS.info}Step 1: click <b>+ Create Job Post</b>. Step 2: view candidates on the new post. Step 3: shortlist one.</div>
+    <div class="card">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:16px;">
+        <button class="btn" onclick="openJobModal()">+ Create Job Post</button>
+      </div>
+      ${jobcards}
+    </div>
+  `;
+}
+function R_back(){ state.recruit.viewingJobId=null; render(); }
+function viewCandidates(id){ state.recruit.viewingJobId=id; render(); }
+function shortlistCandidate(jobId, idx){
+  const job = state.recruit.jobs.find(j=>j.id===jobId);
+  job.candidates[idx].status='Shortlisted';
+  toast(`${job.candidates[idx].name} moved to Shortlisted`);
+  render();
+}
+function openJobModal(){
+  openModal(`
+    <h3>Create Job Post</h3>
+    <div class="field"><label>Job Title</label><input id="jb_title" value="Senior Product Manager"></div>
+    <div class="field"><label>Description</label><textarea id="jb_desc" rows="3">EU/Germany-based product role, remote-friendly.</textarea></div>
+    <div class="modal-actions">
+      <button class="btn ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn" onclick="submitJob()">Publish</button>
+    </div>
+  `);
+}
+function submitJob(){
+  const title = document.getElementById('jb_title').value || 'New Role';
+  const desc = document.getElementById('jb_desc').value || '';
+  state.recruit.jobs.unshift({
+    id: state.recruit.nextId++, title, status:'OPEN', desc,
+    candidates:[{name:'Zainab Malik', status:'New'},{name:'Hamza Tariq', status:'New'}]
+  });
+  closeModal();
+  toast('Job post published');
+  render();
+}
+
+/* ---------- RECRUITMENT FEED (KANBAN) ---------- */
+function renderPipeline(){
+  const P = state.pipeline;
+  const cols = P.stages.map((stageName, idx)=>{
+    const cands = P.candidates.filter(c=>c.stage===idx);
+    const cards = cands.map(c=>`
+      <div class="kancard">
+        <div class="tags">${c.tags.map(t=>`<span>${t}</span>`).join('')}</div>
+        <div class="name">${c.name}</div>
+        <div class="loc">Location: ${c.location}</div>
+        <div class="loc">Notice: ${c.notice} · ${c.exp}</div>
+        ${idx < P.stages.length-1
+          ? `<button class="btn small" onclick="moveCandidate(${c.id})">Move to ${P.stages[idx+1]} →</button>`
+          : `<span class="pill approved">Final Stage</span>`}
+      </div>
+    `).join('') || `<div style="padding:14px;color:#8a95a5;font-size:12px;">No candidates</div>`;
+    return `
+      <div class="kancol">
+        <div class="kancol-head"><span>${stageName}</span><span>${cands.length}</span></div>
+        ${cards}
+      </div>`;
+  }).join('');
+  return `
+    <div class="crumb">Home / Recruitment Feed</div>
+    <button class="backbtn" onclick="setSection('dashboard')">← Back to demo menu</button>
+    <h1>Recruitment Feed</h1>
+    <div class="stepnote">${ICONS.info}Click <b>Move to [next stage] →</b> on any candidate card to advance them through the pipeline.</div>
+    <div class="kanban">${cols}</div>
+  `;
+}
+function moveCandidate(id){
+  const c = state.pipeline.candidates.find(x=>x.id===id);
+  if(c.stage < state.pipeline.stages.length-1){
+    c.stage++;
+    toast(`${c.name} moved to ${state.pipeline.stages[c.stage]}`);
+    render();
+  }
+}
+
+/* ---------- INSURANCE WORKFLOW ---------- */
+function renderInsurance(){
+  const I = state.insurance;
+  const rows = I.policies.map(p=>`
+    <tr>
+      <td>${p.type}</td><td>${p.provider}</td><td>${p.premium}</td><td>${p.policy}</td>
+      <td><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${p.dot==='red'?'var(--red)':'var(--green)'};margin-right:6px;"></span>${p.renewal}</td>
+    </tr>`).join('');
+
+  const tabsOrder = ['Uploaded','Under Review','Sent To Provider','Completed'];
+  const activeTab = I.activeTab || 'Uploaded';
+  const visible = I.endorsements.filter(e=>e.status===activeTab);
+  const endorseRows = visible.map(e=>`
+    <tr>
+      <td>${e.name}</td><td>${e.employee}</td><td>${e.type}</td>
+      <td>${nextActionBtn(e)}</td>
+    </tr>`).join('') || `<tr><td colspan="4" style="color:#8a95a5;text-align:center;padding:20px;">No results.</td></tr>`;
+
+  return `
+    <div class="crumb">Home / Insurance</div>
+    <button class="backbtn" onclick="setSection('dashboard')">← Back to demo menu</button>
+    <h1>Manage Insurance</h1>
+    <div class="stepnote">${ICONS.info}Step 1: click <b>Add Insurance</b> to add a policy. Step 2: click <b>+</b> under Medical Endorsements to submit one, then move it through review.</div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <h3 style="margin:0;">Current Insurance</h3>
+        <button class="btn" onclick="openInsuranceModal()">Add Insurance</button>
+      </div>
+      <table>
+        <tr><th>Insurance Type</th><th>Provider</th><th>Premium</th><th>Policy Number</th><th>Renewal Date</th></tr>
+        ${rows}
+      </table>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <h3 style="margin:0;">Medical Endorsements</h3>
+        <button class="btn small" onclick="openEndorseModal()">+</button>
+      </div>
+      <div class="tabs" style="margin-top:14px;">
+        ${tabsOrder.map(t=>`<div class="tab ${activeTab===t?'active':''}" onclick="setInsTab('${t}')">${t}</div>`).join('')}
+      </div>
+      <table>
+        <tr><th>Name</th><th>Employee</th><th>Request Type</th><th>Action</th></tr>
+        ${endorseRows}
+      </table>
+    </div>
+  `;
+}
+function nextActionBtn(e){
+  const flow = ['Uploaded','Under Review','Sent To Provider','Completed'];
+  const idx = flow.indexOf(e.status);
+  if(idx===flow.length-1) return `<span class="pill approved">Completed</span>`;
+  const nextLabelMap = {Uploaded:'Send to Review', 'Under Review':'Send to Provider', 'Sent To Provider':'Mark Completed'};
+  return `<button class="btn small" onclick="advanceEndorsement(${e.id})">${nextLabelMap[e.status]}</button>`;
+}
+function setInsTab(t){ state.insurance.activeTab=t; render(); }
+function openInsuranceModal(){
+  openModal(`
+    <h3>Add Insurance</h3>
+    <div class="field"><label>Insurance Type</label>
+      <select id="in_type"><option>Health</option><option>Life</option><option>Travel</option></select>
+    </div>
+    <div class="field"><label>Provider</label><input id="in_provider" value="Fine & Fresh"></div>
+    <div class="field"><label>Premium</label><input id="in_premium" value="1,200"></div>
+    <div class="field"><label>Policy Number</label><input id="in_policy" value="POL-${Math.floor(Math.random()*90000+10000)}"></div>
+    <div class="field"><label>Renewal Date</label><input id="in_renewal" value="Jan 15, 2027"></div>
+    <div class="modal-actions">
+      <button class="btn ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn" onclick="submitInsurance()">Save</button>
+    </div>
+  `);
+}
+function submitInsurance(){
+  state.insurance.policies.push({
+    type: document.getElementById('in_type').value,
+    provider: document.getElementById('in_provider').value,
+    premium: document.getElementById('in_premium').value,
+    policy: document.getElementById('in_policy').value,
+    renewal: document.getElementById('in_renewal').value,
+    dot:'green'
+  });
+  closeModal();
+  toast('Insurance policy added');
+  render();
+}
+function openEndorseModal(){
+  openModal(`
+    <h3>Submit Medical Endorsement</h3>
+    <div class="field"><label>Request Name</label><input id="en_name" value="Add Dependant"></div>
+    <div class="field"><label>Employee</label><input id="en_employee" value="Bismaa Suleman"></div>
+    <div class="field"><label>Request Type</label>
+      <select id="en_type"><option>Add Member</option><option>Remove Member</option><option>Update Coverage</option></select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn" onclick="submitEndorsement()">Submit</button>
+    </div>
+  `);
+}
+function submitEndorsement(){
+  state.insurance.endorsements.push({
+    id: state.insurance.endorseNextId++,
+    name: document.getElementById('en_name').value,
+    employee: document.getElementById('en_employee').value,
+    type: document.getElementById('en_type').value,
+    status: 'Uploaded'
+  });
+  state.insurance.activeTab='Uploaded';
+  closeModal();
+  toast('Endorsement submitted');
+  render();
+}
+function advanceEndorsement(id){
+  const flow = ['Uploaded','Under Review','Sent To Provider','Completed'];
+  const e = state.insurance.endorsements.find(x=>x.id===id);
+  const idx = flow.indexOf(e.status);
+  e.status = flow[idx+1];
+  state.insurance.activeTab = e.status;
+  toast(`Moved to "${e.status}"`);
+  render();
+}
+
+/* ---------- CALENDAR ---------- */
+function buildMonthGrid(year, month){
+  const first = new Date(year, month, 1);
+  const startOffset = (first.getDay()+6)%7; // Monday=0
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const daysInPrev = new Date(year, month, 0).getDate();
+  const cells = [];
+  for(let i=startOffset-1;i>=0;i--) cells.push({d:daysInPrev-i, out:true});
+  for(let d=1; d<=daysInMonth; d++) cells.push({d, out:false, date:`${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`});
+  while(cells.length % 7 !== 0 || cells.length < 35) cells.push({d: cells.length - (startOffset+daysInMonth) + 1, out:true});
+  return cells;
+}
+function renderCalendar(){
+  const C = state.calendar;
+  const cells = buildMonthGrid(C.year, C.month);
+  const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const dayHeads = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const cellHtml = cells.map(c=>{
+    const evs = c.out ? [] : C.events.filter(e=>e.date.startsWith(c.date));
+    const evHtml = evs.map(e=>`<div class="evbar" style="background:${e.color};" title="${e.label}">${e.label}</div>`).join('');
+    return `<div class="calcell ${c.out?'out':''}" onclick="${c.out?'':`openEventModal('${c.date}')`}">
+      <div class="daynum">${c.d}</div>${evHtml}
+    </div>`;
+  }).join('');
+  return `
+    <div class="crumb">Home / Calendar</div>
+    <button class="backbtn" onclick="setSection('dashboard')">← Back to demo menu</button>
+    <h1>Your Calendars</h1>
+    <div class="stepnote">${ICONS.info}Click any day to add a leave/event to it — colors match type (green = approved leave, amber = pending, red/purple = other pending types).</div>
+    <div class="card">
+      <div class="calnav">
+        <h3 style="margin:0;">${monthNames[C.month]} ${C.year}</h3>
+        <button class="btn small" onclick="openEventModal()">+ Create Event</button>
+      </div>
+      <div class="calgrid">
+        ${dayHeads.map(d=>`<div class="calhead">${d}</div>`).join('')}
+        ${cellHtml}
+      </div>
+    </div>
+  `;
+}
+function openEventModal(date){
+  const C = state.calendar;
+  const defaultDate = date || `${C.year}-${String(C.month+1).padStart(2,'0')}-10`;
+  openModal(`
+    <h3>Create Event</h3>
+    <div class="field"><label>Date</label><input type="date" id="ev_date" value="${defaultDate}"></div>
+    <div class="field"><label>Title</label><input id="ev_label" value="Team Offsite"></div>
+    <div class="field"><label>Type</label>
+      <select id="ev_color">
+        <option value="#3fa66b">Approved leave (green)</option>
+        <option value="#e0a63a">Pending leave (amber)</option>
+        <option value="#e05252">Unpaid / urgent (red)</option>
+        <option value="#7c6fe0">Sick (purple)</option>
+        <option value="#2f86d6">General event (blue)</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn" onclick="submitEvent()">Add to Calendar</button>
+    </div>
+  `);
+}
+function submitEvent(){
+  const date = document.getElementById('ev_date').value;
+  const label = document.getElementById('ev_label').value || 'Event';
+  const color = document.getElementById('ev_color').value;
+  state.calendar.events.push({date, label, color});
+  closeModal();
+  toast('Added to calendar');
+  render();
+}
+
+/* ---------- REPORTS ---------- */
+function conicGradient(data){
+  const total = data.reduce((s,d)=>s+d.v,0) || 1;
+  let acc=0; const stops=[];
+  data.forEach(d=>{
+    const start = acc/total*360; acc+=d.v; const end = acc/total*360;
+    stops.push(`${d.c} ${start}deg ${end}deg`);
+  });
+  return `conic-gradient(${stops.join(',')})`;
+}
+function renderPieCard(title, data){
+  return `<div class="card">
+    <h3>${title}</h3>
+    <div class="piewrap">
+      <div class="pie" style="background:${conicGradient(data)};"></div>
+      <div class="legend">${data.map(d=>`<div class="item"><span class="swatch" style="background:${d.c};"></span>${d.l} (${d.v})</div>`).join('')}</div>
+    </div>
+  </div>`;
+}
+function renderReports(){
+  const nationality = [{l:'Pakistani',v:127,c:PIE_COLORS[0]},{l:'Albanian',v:7,c:PIE_COLORS[1]},{l:'American',v:2,c:PIE_COLORS[2]},{l:'Other',v:11,c:PIE_COLORS[3]}];
+  const department = [{l:'Cool',v:135,c:PIE_COLORS[3]},{l:'Delivery Team',v:4,c:PIE_COLORS[1]},{l:'Other',v:8,c:PIE_COLORS[5]}];
+  const religion = [{l:'Muslim',v:129,c:PIE_COLORS[3]},{l:'Islam',v:11,c:PIE_COLORS[1]},{l:'Other',v:2,c:PIE_COLORS[5]}];
+  const benefit = [{l:'New benefit',v:6,c:PIE_COLORS[2]},{l:'Test me',v:3,c:PIE_COLORS[3]},{l:'Medical insurance',v:2,c:PIE_COLORS[0]}];
+  const office = [{l:'Cool',v:132,c:PIE_COLORS[3]},{l:'Development',v:4,c:PIE_COLORS[1]},{l:'Other',v:11,c:PIE_COLORS[5]}];
+  const gender = [{l:'Female',v:121,c:PIE_COLORS[3]},{l:'Male',v:10,c:PIE_COLORS[2]},{l:'Other',v:11,c:PIE_COLORS[5]}];
+  const marital = [{l:'Single',v:124,c:PIE_COLORS[1]},{l:'Married',v:16,c:PIE_COLORS[3]}];
+  const age = [{l:'0-19',v:10},{l:'20-29',v:8},{l:'30-39',v:2},{l:'40-49',v:2},{l:'50-59',v:0},{l:'60-69',v:0}];
+  const maxAge = Math.max(...age.map(a=>a.v))||1;
+  const ageBars = age.map(a=>`<div class="bar" style="height:${Math.max(a.v/maxAge*110,2)}px;"><span class="lbl">${a.l}</span></div>`).join('');
+
+  return `
+    <div class="crumb">Home / Reports</div>
+    <button class="backbtn" onclick="setSection('dashboard')">← Back to demo menu</button>
+    <h1>Reports Dashboard</h1>
+    <div class="stepnote">${ICONS.info}Custom reports built from live workforce data — filterable by office, department, and more.</div>
+    <div class="tabs">
+      <div class="tab active">Custom Reports</div>
+      <div class="tab">Leave Used Reports</div>
+      <div class="tab">Retention Reports</div>
+      <div class="tab">Gratuity Report</div>
+    </div>
+    <div class="grid2">
+      ${renderPieCard('Employees by Nationality', nationality)}
+      ${renderPieCard('Employees by Department', department)}
+      ${renderPieCard('Employees by Religion', religion)}
+      ${renderPieCard('Employees by Benefit', benefit)}
+      ${renderPieCard('Employees by Office', office)}
+      ${renderPieCard('Employees by Gender', gender)}
+      ${renderPieCard('Employees by Marital Status', marital)}
+      <div class="card"><h3>Employees by Age</h3><div class="barchart">${ageBars}</div></div>
+    </div>
+  `;
+}
+
+/* ---------- ATTENDANCE ---------- */
+function renderAttendance(){
+  const A = state.attendance;
+  const rows = A.days.map(d=>`
+    <div class="attrow">
+      <div class="attmeta"><b>${d.day}</b>Clock-in: ${d.checkin}${d.late? ` <span style="color:var(--red);">Late by ${d.late}</span>`:''}</div>
+      <div class="atttrack"><div class="attfill" style="width:${d.pct}%;"></div></div>
+      <div class="attmeta" style="text-align:right;">Check-out: ${d.checkout}<br>Hrs worked: ${d.hours}</div>
+    </div>
+  `).join('');
+  return `
+    <div class="crumb">Home / Attendance</div>
+    <button class="backbtn" onclick="setSection('dashboard')">← Back to demo menu</button>
+    <h1>Attendance</h1>
+    <div class="stepnote">${ICONS.info}Click <b>Check-In</b> to simulate clocking in for today.</div>
+    <div class="card">
+      <div class="attheader">
+        <div><b>General</b> [ 9:00 am – 6:00 pm ]</div>
+        <button class="btn ${A.checkedIn?'green':''}" onclick="toggleCheckin()">${A.checkedIn? '✅ Checked In' : 'Check-In'}</button>
+      </div>
+      ${rows}
+    </div>
+  `;
+}
+function toggleCheckin(){
+  state.attendance.checkedIn = !state.attendance.checkedIn;
+  if(state.attendance.checkedIn) toast('Checked in for today');
+  render();
+}
+
+/* ---------- ANNOUNCEMENTS / FEED ---------- */
+function renderFeed(){
+  const F = state.feed;
+  const postsHtml = F.posts.map(p=>{
+    const comments = p.comments.map(c=>`<div class="commentitem">${c}</div>`).join('');
+    return `
+      <div class="card">
+        <div style="display:flex;gap:10px;align-items:center;">
+          <div class="groupavatar"></div>
+          <b>Anum Aaaa Edit MTPe</b>
+        </div>
+        ${p.text ? `<p style="margin:10px 0;">${p.text}</p>` : ''}
+        <div class="postimg">🙌</div>
+        <div class="postactions">
+          <span onclick="likePost(${p.id})">👍 Like (${p.likes})</span>
+          <span>💬 Comment (${p.comments.length})</span>
+        </div>
+        <div class="commentbox">
+          <input id="cm_${p.id}" placeholder="Write a comment...">
+          <button class="btn small" onclick="addComment(${p.id})">Post</button>
+        </div>
+        ${comments}
+      </div>
+    `;
+  }).join('');
+  const groupsHtml = F.groups.map(g=>`
+    <div class="grouprow"><div class="groupavatar"></div><div><b>${g.name}</b><div style="color:#8a95a5;font-size:12px;">${g.members} members</div></div></div>
+  `).join('');
+  return `
+    <div class="crumb">Home / Announcements</div>
+    <button class="backbtn" onclick="setSection('dashboard')">← Back to demo menu</button>
+    <h1>Announcements</h1>
+    <div class="stepnote">${ICONS.info}Start a post, like it, and add comments. Create a new group on the right.</div>
+    <div class="feedwrap">
+      <div class="feedmain">
+        <div class="card">
+          <textarea id="feed_draft" rows="2" placeholder="Start a post...." style="width:100%;border:1px solid var(--border);border-radius:8px;padding:10px;font-family:inherit;"></textarea>
+          <div style="display:flex;justify-content:flex-end;margin-top:10px;">
+            <button class="btn" onclick="submitPost()">Post</button>
+          </div>
+        </div>
+        ${postsHtml}
+      </div>
+      <div class="groups">
+        <button class="btn" style="width:100%;margin-bottom:16px;" onclick="openGroupModal()">＋ Create Group</button>
+        <div class="card">
+          <h3>Groups</h3>
+          ${groupsHtml}
+        </div>
+      </div>
+    </div>
+  `;
+}
+function submitPost(){
+  const text = document.getElementById('feed_draft').value.trim();
+  if(!text){ toast('Write something first'); return; }
+  state.feed.posts.unshift({id: Date.now(), likes:0, comments:[], text});
+  toast('Posted!');
+  render();
+}
+function likePost(id){
+  const p = state.feed.posts.find(x=>x.id===id);
+  p.likes++;
+  render();
+}
+function addComment(id){
+  const input = document.getElementById('cm_'+id);
+  const val = input.value.trim();
+  if(!val) return;
+  const p = state.feed.posts.find(x=>x.id===id);
+  p.comments.push(val);
+  render();
+}
+function openGroupModal(){
+  openModal(`
+    <h3>Create Group</h3>
+    <div class="field"><label>Group Name</label><input id="gr_name" value="Product Team"></div>
+    <div class="field"><label>Members</label><input id="gr_members" type="number" value="3"></div>
+    <div class="modal-actions">
+      <button class="btn ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn" onclick="submitGroup()">Create</button>
+    </div>
+  `);
+}
+function submitGroup(){
+  const name = document.getElementById('gr_name').value || 'New Group';
+  const members = document.getElementById('gr_members').value || 0;
+  state.feed.groups.unshift({name, members});
+  closeModal();
+  toast('Group created');
+  render();
+}
+
+/* ---------- EMPLOYEES ---------- */
+function renderEmployees(){
+  const E = state.employees;
+  const q = E.query.toLowerCase();
+  const filtered = E.list.filter(e=>e.name.toLowerCase().includes(q));
+  const rows = filtered.map((e,i)=>`
+    <tr>
+      <td>${e.name}</td><td>${e.title||'—'}</td><td>${e.role}</td><td>${e.dept||'—'}</td>
+      <td>${e.mobile||'—'}</td><td>${e.email}</td>
+      <td><button class="btn small" onclick="viewEmployee(${filtered.indexOf(e)})">View</button></td>
+    </tr>`).join('') || `<tr><td colspan="7" style="color:#8a95a5;text-align:center;padding:20px;">No employees match "${E.query}".</td></tr>`;
+  return `
+    <div class="crumb">Home / Employees</div>
+    <button class="backbtn" onclick="setSection('dashboard')">← Back to demo menu</button>
+    <h1>Employees</h1>
+    <div class="stepnote">${ICONS.info}Step 1: search by name. Step 2: click <b>+ Add Employee</b> to create a new record. Step 3: click <b>View</b> on any row.</div>
+    <div class="card">
+      <div style="display:flex;gap:12px;margin-bottom:16px;">
+        <input placeholder="Search Employees by First or Last Name…" style="flex:1;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;"
+          oninput="filterEmployees(this.value)" value="${E.query}">
+        <button class="btn" onclick="openEmployeeModal()">+ Add Employee</button>
+      </div>
+      <table>
+        <tr><th>Name</th><th>Job Title</th><th>User Role</th><th>Department</th><th>Mobile</th><th>Email</th><th>Action</th></tr>
+        ${rows}
+      </table>
+    </div>
+  `;
+}
+function filterEmployees(v){ state.employees.query = v; render(); }
+function viewEmployee(idx){
+  const e = state.employees.list[idx];
+  toast(`Viewing ${e.name} — ${e.role}`);
+}
+function openEmployeeModal(){
+  openModal(`
+    <h3>Add Employee</h3>
+    <div class="field"><label>Full Name</label><input id="em_name" value="New Employee"></div>
+    <div class="field"><label>Job Title</label><input id="em_title" value="Associate"></div>
+    <div class="field"><label>User Role</label>
+      <select id="em_role"><option>Employee</option><option>Employee Manager</option><option>HR Administrator</option><option>HR Manager</option><option>C-Level</option></select>
+    </div>
+    <div class="field"><label>Department</label><input id="em_dept" value="Cool"></div>
+    <div class="field"><label>Email</label><input id="em_email" value="new.employee@mtp.tech"></div>
+    <div class="modal-actions">
+      <button class="btn ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn" onclick="submitEmployee()">Save</button>
+    </div>
+  `);
+}
+function submitEmployee(){
+  state.employees.list.unshift({
+    name: document.getElementById('em_name').value || 'New Employee',
+    title: document.getElementById('em_title').value,
+    role: document.getElementById('em_role').value,
+    dept: document.getElementById('em_dept').value,
+    mobile:'', email: document.getElementById('em_email').value
+  });
+  closeModal();
+  toast('Employee added');
+  render();
+}
+
+/* ---------- SETTINGS ---------- */
+function renderSettings(){
+  const O = state.settings.org;
+  return `
+    <div class="crumb">Home / Settings</div>
+    <button class="backbtn" onclick="setSection('dashboard')">← Back to demo menu</button>
+    <h1>Settings</h1>
+    <div class="stepnote">${ICONS.info}Edit organisation details below and click <b>Save Changes</b>.</div>
+    <div class="tabs">
+      <div class="tab active">Details</div>
+      <div class="tab">Processes</div>
+      <div class="tab">Offices</div>
+      <div class="tab">Benefits</div>
+      <div class="tab">My Subscription</div>
+      <div class="tab">System Configuration</div>
+    </div>
+    <div class="card">
+      <h3>${O.name}</h3>
+      <div class="grid2">
+        <div class="field"><label>Organisation Name</label><input id="st_name" value="${O.name}"></div>
+        <div class="field"><label>Website URL</label><input id="st_website" value="${O.website}"></div>
+        <div class="field"><label>Number of Employees</label><input id="st_employees" value="${O.employees}"></div>
+        <div class="field"><label>Industry</label><input id="st_industry" value="${O.industry}"></div>
+        <div class="field"><label>Contact Email</label><input id="st_email" value="${O.email}"></div>
+        <div class="field"><label>Contact Address</label><input id="st_address" value="${O.address}"></div>
+        <div class="field"><label>Contact Phone Number</label><input id="st_phone" value="${O.phone}"></div>
+        <div class="field"><label>Currency</label><input id="st_currency" value="${O.currency}"></div>
+        <div class="field"><label>Work Hours Start</label><input id="st_workstart" value="${O.workStart}"></div>
+        <div class="field"><label>Work Hours End</label><input id="st_workend" value="${O.workEnd}"></div>
+        <div class="field"><label>Payroll Generation Date</label><input id="st_payroll" value="${O.payrollDate}"></div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;">
+        <button class="btn" onclick="saveSettings()">Save Changes</button>
+      </div>
+    </div>
+    <div class="card">
+      <h3>User Permissions and Privileges</h3>
+      <table>
+        <tr><th>User Level</th><th>Add / Edit users</th><th>Approve / Reject Requests</th><th>Read All Data</th><th>Read Basic Data</th><th>Edit own data</th></tr>
+        <tr><td>HR Manager</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+        <tr><td>HR Administrator</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+        <tr><td>C-Level</td><td>No</td><td>No</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+        <tr><td>Employee Manager</td><td>No</td><td>No</td><td>No</td><td>Yes</td><td>Yes</td></tr>
+        <tr><td>Employee</td><td>No</td><td>No</td><td>No</td><td>No</td><td>Yes</td></tr>
+      </table>
+    </div>
+  `;
+}
+function saveSettings(){
+  const O = state.settings.org;
+  O.name = document.getElementById('st_name').value;
+  O.website = document.getElementById('st_website').value;
+  O.employees = document.getElementById('st_employees').value;
+  O.industry = document.getElementById('st_industry').value;
+  O.email = document.getElementById('st_email').value;
+  O.address = document.getElementById('st_address').value;
+  O.phone = document.getElementById('st_phone').value;
+  O.currency = document.getElementById('st_currency').value;
+  O.workStart = document.getElementById('st_workstart').value;
+  O.workEnd = document.getElementById('st_workend').value;
+  O.payrollDate = document.getElementById('st_payroll').value;
+  toast('Settings saved');
+  render();
+}
+
+/* ---------- SURVEY MANAGEMENT ---------- */
+function renderSurvey(){
+  const S = state.survey;
+  if(S.viewingId) return renderSurveyAnalytics(S.viewingId);
+
+  const tabMap = {active:'Active', draft:'Draft', closed:'Closed'};
+  const activeKey = S.activeTab;
+  const filtered = S.surveys.filter(s=>s.status.toLowerCase()===activeKey);
+  const rows = filtered.map(s=>{
+    const pct = s.total ? Math.round(s.responses/s.total*100) : 0;
+    let statusBtn;
+    if(s.status==='Draft') statusBtn = `<button class="btn small" onclick="publishSurvey(${s.id})">Publish</button>`;
+    else if(s.status==='Active') statusBtn = `<button class="btn small amber" onclick="closeSurvey(${s.id})">Close Survey</button>`;
+    else statusBtn = `<span class="pill approved">Closed</span>`;
+    const hasResponses = s.responses > 0;
+    return `
+      <div class="jobcard">
+        <div style="display:flex;justify-content:space-between;">
+          <h4>${s.title}</h4>
+          <span class="pill ${s.status==='Active'?'open':s.status==='Draft'?'pending':'approved'}">${s.status}</span>
+        </div>
+        <div class="meta">Created: ${s.created}</div>
+        ${s.total ? `
+          <div class="atttrack" style="margin:10px 0;"><div class="attfill" style="width:${pct}%;"></div></div>
+          <div class="meta">${s.responses} of ${s.total} responses (${pct}%)</div>
+        ` : `<div class="meta">Not yet published.</div>`}
+        <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+          ${statusBtn}
+          <button class="btn small ghost" onclick="openEditSurveyModal(${s.id})">✎ Edit</button>
+          <button class="btn small ghost" ${hasResponses?'':'disabled'} onclick="${hasResponses?`viewAnalytics(${s.id})`:''}">📊 View Analytics</button>
+        </div>
+      </div>
+    `;
+  }).join('') || `<div style="color:#8a95a5;padding:20px;text-align:center;">No ${tabMap[activeKey]} surveys.</div>`;
+
+  return `
+    <div class="crumb">Home / Survey Management</div>
+    <button class="backbtn" onclick="setSection('dashboard')">← Back to demo menu</button>
+    <h1>Survey Management</h1>
+    <div class="stepnote">${ICONS.info}Step 1: click <b>+ Create Survey</b> — it starts as a Draft. Step 2: publish it, or click <b>✎ Edit</b> to change it first. Step 3: once it has responses, click <b>📊 View Analytics</b>.</div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <div class="tabs" style="margin:0;">
+          ${Object.keys(tabMap).map(k=>`<div class="tab ${activeKey===k?'active':''}" onclick="setSurveyTab('${k}')">${tabMap[k]}</div>`).join('')}
+        </div>
+        <button class="btn" onclick="openSurveyModal()">+ Create Survey</button>
+      </div>
+      ${rows}
+    </div>
+  `;
+}
+function openEditSurveyModal(id){
+  const s = state.survey.surveys.find(x=>x.id===id);
+  openModal(`
+    <h3>Edit Survey</h3>
+    <div class="field"><label>Survey Title</label><input id="sv_edit_title" value="${s.title}"></div>
+    <div class="field"><label>Target Audience Size</label><input id="sv_edit_total" type="number" value="${s.total}"></div>
+    <div class="modal-actions">
+      <button class="btn ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn" onclick="submitEditSurvey(${id})">Save Changes</button>
+    </div>
+  `);
+}
+function submitEditSurvey(id){
+  const s = state.survey.surveys.find(x=>x.id===id);
+  s.title = document.getElementById('sv_edit_title').value || s.title;
+  s.total = parseInt(document.getElementById('sv_edit_total').value) || s.total;
+  closeModal();
+  toast('Survey updated');
+  render();
+}
+function viewAnalytics(id){ state.survey.viewingId = id; render(); }
+function surveyBack(){ state.survey.viewingId = null; render(); }
+function renderSurveyAnalytics(id){
+  const s = state.survey.surveys.find(x=>x.id===id);
+  const qBlocks = (s.questions||[]).map((q,qi)=>{
+    const maxCount = Math.max(...q.options.map(o=>o.count)) || 1;
+    const totalAnswered = q.options.reduce((sum,o)=>sum+o.count,0);
+    const bars = q.options.map(o=>{
+      const pct = Math.round(o.count/totalAnswered*100);
+      const width = Math.round(o.count/maxCount*100);
+      return `
+        <div style="margin-bottom:10px;">
+          <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:4px;">
+            <span>${o.label}</span><span style="color:#5b6b81;">${o.count} responses (${pct}%)</span>
+          </div>
+          <div class="atttrack"><div class="attfill" style="width:${width}%;background:${PIE_COLORS[qi % PIE_COLORS.length]};"></div></div>
+        </div>`;
+    }).join('');
+    return `
+      <div class="card">
+        <h3>Q${qi+1}. ${q.text}</h3>
+        <div class="meta" style="color:#8a95a5;font-size:12.5px;margin-bottom:12px;">${totalAnswered} people answered this question</div>
+        ${bars}
+      </div>`;
+  }).join('') || `<div class="card"><p style="color:#8a95a5;">No question data available for this survey yet.</p></div>`;
+
+  return `
+    <div class="crumb">Home / Survey Management / ${s.title}</div>
+    <button class="backbtn" onclick="surveyBack()">← Back to Survey Management</button>
+    <h1>Analytics — ${s.title}</h1>
+    <div class="stepnote">${ICONS.info}Each bar shows how many of the ${s.responses} respondents chose that option, question by question.</div>
+    <div class="grid2" style="align-items:start;">
+      <div class="card" style="grid-column:1 / -1;">
+        <div class="retstat">
+          <div><div class="n">${s.responses}</div><div class="l">Total Respondents</div></div>
+          <div><div class="n">${s.total}</div><div class="l">Audience Size</div></div>
+          <div><div class="n">${s.total ? Math.round(s.responses/s.total*100) : 0}%</div><div class="l">Response Rate</div></div>
+          <div><div class="n">${(s.questions||[]).length}</div><div class="l">Questions</div></div>
+        </div>
+      </div>
+    </div>
+    ${qBlocks}
+  `;
+}
+function setSurveyTab(k){ state.survey.activeTab=k; render(); }
+function openSurveyModal(){
+  openModal(`
+    <h3>Create Survey</h3>
+    <div class="field"><label>Survey Title</label><input id="sv_title" value="New Pulse Survey"></div>
+    <div class="field"><label>Target Audience Size</label><input id="sv_total" type="number" value="50"></div>
+    <div class="modal-actions">
+      <button class="btn ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn" onclick="submitSurvey()">Save as Draft</button>
+    </div>
+  `);
+}
+function submitSurvey(){
+  state.survey.surveys.unshift({
+    id: state.survey.nextId++,
+    title: document.getElementById('sv_title').value || 'New Survey',
+    status:'Draft', responses:0,
+    total: parseInt(document.getElementById('sv_total').value)||0,
+    created:'—', questions:[]
+  });
+  state.survey.activeTab='draft';
+  closeModal();
+  toast('Survey saved as Draft');
+  render();
+}
+function publishSurvey(id){
+  const s = state.survey.surveys.find(x=>x.id===id);
+  s.status='Active'; s.created='Jul 23, 2026';
+  s.responses = Math.floor(s.total*0.15);
+  state.survey.activeTab='active';
+  toast('Survey published and now Active');
+  render();
+}
+function closeSurvey(id){
+  const s = state.survey.surveys.find(x=>x.id===id);
+  s.status='Closed';
+  s.responses = Math.max(s.responses, Math.floor(s.total*0.8));
+  state.survey.activeTab='closed';
+  toast('Survey closed');
+  render();
+}
+
+/* ---------- MASTER RENDER ---------- */
+function render(){
+  renderSidebar();
+  const c = document.getElementById('content');
+  if(state.section==='dashboard') c.innerHTML = renderDashboard();
+  else if(state.section==='requests') c.innerHTML = renderRequests();
+  else if(state.section==='recruit') c.innerHTML = renderRecruit();
+  else if(state.section==='pipeline') c.innerHTML = renderPipeline();
+  else if(state.section==='insurance') c.innerHTML = renderInsurance();
+  else if(state.section==='calendar') c.innerHTML = renderCalendar();
+  else if(state.section==='reports') c.innerHTML = renderReports();
+  else if(state.section==='attendance') c.innerHTML = renderAttendance();
+  else if(state.section==='feed') c.innerHTML = renderFeed();
+  else if(state.section==='employees') c.innerHTML = renderEmployees();
+  else if(state.section==='settings') c.innerHTML = renderSettings();
+  else if(state.section==='survey') c.innerHTML = renderSurvey();
+}
+render();
+</script>
+</body>
+</html>
