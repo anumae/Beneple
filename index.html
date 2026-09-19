@@ -3,18 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MTP Platform — Workflow Demo</title>
+<title>Beneple — HR Platform Demo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lexend:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
     --ink:#151a2e; --ink-soft:#5b6478; --muted:#8990a3;
-    --primary:#4f46e5; --primary-dark:#3f37c9; --primary-light:#eef0fd; --primary-mid:#c7c4f7;
+    --primary:#155EEF; --primary-dark:#0F3FA8; --primary-light:#EAF1FF; --primary-mid:#B9D2FF;
     --accent:#0ea5a0;
     --bg:#f4f5fb; --surface:#ffffff; --border:#e7e8f2; --border-soft:#f0f1f8;
     --green:#16a366; --green-light:#e5f7ee; --amber:#dd9a1c; --amber-light:#fdf3df;
-    --red:#e0455c; --red-light:#fcebee; --blue:#3a7fe0; --blue-light:#eaf1fd; --purple:#8b5cf6;
+    --red:#e0455c; --red-light:#fcebee; --blue:#3a7fe0; --blue-light:#eaf1fd; --purple:#0F3FA8;
     --shadow-sm:0 1px 2px rgba(21,26,46,.05), 0 1px 1px rgba(21,26,46,.04);
     --shadow-md:0 4px 14px rgba(21,26,46,.08), 0 1px 3px rgba(21,26,46,.06);
     --shadow-lg:0 16px 40px rgba(21,26,46,.14), 0 4px 12px rgba(21,26,46,.08);
@@ -266,11 +266,11 @@
   .statcard.grad .icn{background:rgba(255,255,255,.22)!important;color:#fff!important;}
   .statcard.grad .lbl{color:rgba(255,255,255,.85);}
   .statcard.grad .num{color:#fff;}
-  .g-indigo{background:linear-gradient(135deg,#4338ca,#6366f1);}
+  .g-indigo{background:linear-gradient(135deg,#0F3FA8,#155EEF);}
   .g-amber{background:linear-gradient(135deg,#b45309,#f59e0b);}
   .g-rose{background:linear-gradient(135deg,#be123c,#f43f5e);}
   .g-green{background:linear-gradient(135deg,#0f766e,#22c55e);}
-  .g-violet{background:linear-gradient(135deg,#6d28d9,#a78bfa);}
+  .g-violet{background:linear-gradient(135deg,#0B2E7A,#4C8DFF);}
   .g-cyan{background:linear-gradient(135deg,#0e7490,#22d3ee);}
 
   .evscroll{max-height:360px;overflow-y:auto;padding-right:6px;margin-top:6px;}
@@ -278,7 +278,7 @@
   .evscroll::-webkit-scrollbar-thumb{background:#d7d9ea;border-radius:6px;}
   .minidonut{width:92px;height:92px;border-radius:50%;flex-shrink:0;box-shadow:inset 0 0 0 18px #fff,0 0 0 1px var(--border-soft);}
 
-  .postimg.graphic{background:linear-gradient(135deg,#4338ca,#6366f1);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#fff;}
+  .postimg.graphic{background:linear-gradient(135deg,#0F3FA8,#155EEF);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#fff;}
   .postimg.graphic .pg-title{font-family:'Lexend',sans-serif;font-weight:700;font-size:13px;}
   .postimg.graphic svg{opacity:.95;}
 
@@ -292,7 +292,7 @@
 <body>
 <div id="topbar">
   <div class="left">
-    <div class="greet">Welcome back, Anum<span>MTP Platform · Workforce Suite</span></div>
+    <div class="greet">Welcome back, Anum<span>Beneple · HR Platform</span></div>
     <div class="searchbox">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
       <input placeholder="Search people, requests, records…">
@@ -316,7 +316,7 @@
 <div id="modalRoot"></div>
 
 <script>
-const PIE_COLORS = ['#6366f1','#f59e0b','#ec4899','#22c55e','#06b6d4','#a78bfa','#f43f5e'];
+const PIE_COLORS = ['#155EEF','#f59e0b','#ec4899','#22c55e','#06b6d4','#0F3FA8','#f43f5e'];
 const ICONS = {
   dashboard:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>',
   requests:'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6l1 3H8l1-3Z"/><rect x="5" y="5" width="14" height="17" rx="2"/><path d="M9 12h6M9 16h6"/></svg>',
@@ -368,7 +368,7 @@ const state = {
       {date:'2026-05-05', label:'Pending Maternity For Farah', color:'#f59e0b'},
       {date:'2026-05-06', label:'Pending Paternity For Farah', color:'#f59e0b'},
       {date:'2026-05-04b', label:'Pending Unpaid For Farah', color:'#f43f5e'},
-      {date:'2026-05-05b', label:'Pending Sick For Farah', color:'#a78bfa'}
+      {date:'2026-05-05b', label:'Pending Sick For Farah', color:'#06b6d4'}
     ]
   },
   attendance: {
@@ -402,7 +402,7 @@ const state = {
        text:'Shout-out to our Employee of the Month — recognized for outstanding client delivery on the Sunesis programme 🏆',
        graphic:'celebration', likes:21, comments:['Well deserved!']},
       {id:1, author:'Anum Abdullah', role:'Portfolio & Delivery Lead', time:'3d ago',
-       text:'Welcome to the new MTP Platform announcements feed — post updates, tag your team, and keep everyone in the loop.',
+       text:'Welcome to the new Beneple announcements feed — post updates, tag your team, and keep everyone in the loop.',
        graphic:null, likes:6, comments:[]}
     ],
     groups:[
@@ -417,22 +417,27 @@ const state = {
   employees: {
     query:'',
     list:[
-      {name:'Youssef Karam', title:'', role:'C-Level', dept:'Product & Delivery', mobile:'', email:'youssef.karam@mtp.tech'},
-      {name:'Farah Haddad', title:'', role:'C-Level', dept:'', mobile:'', email:'farah.haddad@mtp.tech'},
-      {name:'Aisha Demiri', title:'', role:'HR Administrator', dept:'Product & Delivery', mobile:'', email:'aisha.demiri@mtp.tech'},
-      {name:'Anum Abdullah', title:'Project Manager', role:'HR Manager', dept:'', mobile:'900786015', email:'anum.abdullah@mtp.tech'},
-      {name:'Bachar Helamieh', title:'Agent', role:'Employee', dept:'', mobile:'00971 52 382 2315', email:'bachar.helamieh@mtp.tech'},
-      {name:'Bismaa Suleman', title:'HR Coordinator', role:'HR Administrator', dept:'', mobile:'', email:'bisma.suleman@mtp.tech'}
+      {name:'Youssef Karam', title:'', role:'C-Level', dept:'Product & Delivery', mobile:'', email:'youssef.karam@beneple.com'},
+      {name:'Farah Haddad', title:'', role:'C-Level', dept:'', mobile:'', email:'farah.haddad@beneple.com'},
+      {name:'Aisha Demiri', title:'', role:'HR Administrator', dept:'Product & Delivery', mobile:'', email:'aisha.demiri@beneple.com'},
+      {name:'Anum Abdullah', title:'Project Manager', role:'HR Manager', dept:'', mobile:'900786015', email:'anum.abdullah@beneple.com'},
+      {name:'Bachar Helamieh', title:'Agent', role:'Employee', dept:'', mobile:'00971 52 382 2315', email:'bachar.helamieh@beneple.com'},
+      {name:'Bismaa Suleman', title:'HR Coordinator', role:'HR Administrator', dept:'', mobile:'', email:'bisma.suleman@beneple.com'}
     ],
     nextId:1
   },
   settings: {
-    org: {name:'Mayfair Technology Partners', website:'https://www.mayfairtp.com', employees:150, industry:'Technology & SaaS',
-      email:'info@mayfairtp.com', address:'Dubai Internet City, Dubai, UAE', phone:'+971 4 123 4567', currency:'AED',
+    org: {name:'Beneple', website:'https://www.beneple.com', employees:150, industry:'Insurance & Employee Benefits',
+      email:'info@beneple.com', address:'1604 Ubora Tower, Business Bay, Dubai, UAE', phone:'+971 4 567 4500', currency:'AED',
       workStart:'09:00 am', workEnd:'06:00 pm', payrollDate:'28'}
   },
   survey: {
     activeId: 1,
+    view: 'analytics',
+    listTab: 'active',
+    builder: { title:'New Pulse Survey', total:50, fields:[
+      {text:'', type:'single', options:['Option 1','Option 2']}
+    ]},
     surveys:[
       {id:1, title:'Employee Engagement Q3', status:'Active', responses:88, total:150, created:'Jul 01, 2026',
         questions:[
@@ -517,7 +522,7 @@ function renderSidebar(){
       </div>`).join('')}
   `).join('');
   document.getElementById('sidebar').innerHTML = `
-    <div class="brand"><div class="mark">M</div><div class="name">MTP&nbsp;Platform</div></div>
+    <div class="brand"><div class="mark">B</div><div class="name">Beneple</div></div>
     ${nav}
   `;
 }
@@ -961,12 +966,12 @@ function renderCalendar(){
       <div><div>${e.label}</div><div class="evdate">${e.date.slice(0,10)}</div></div>
     </div>`).join('') || `<p style="color:var(--muted);font-size:12.5px;margin:0;">No events logged this month.</p>`;
   const approvedCt = monthEvents.filter(e=>e.color==='#22c55e').length;
-  const pendingCt = monthEvents.filter(e=>e.color==='#f59e0b'||e.color==='#f43f5e'||e.color==='#a78bfa').length;
+  const pendingCt = monthEvents.filter(e=>e.color==='#f59e0b'||e.color==='#f43f5e'||e.color==='#06b6d4').length;
   const otherCt = Math.max(monthEvents.length - approvedCt - pendingCt, 0);
   const breakdown = [
     {l:'Approved', v:approvedCt, c:'#22c55e'},
     {l:'Pending', v:pendingCt, c:'#f59e0b'},
-    {l:'Other', v:otherCt, c:'#6366f1'}
+    {l:'Other', v:otherCt, c:'#155EEF'}
   ];
   const donutTotal = breakdown.reduce((s,d)=>s+d.v,0) || 1;
 
@@ -974,7 +979,7 @@ function renderCalendar(){
     <div class="crumb">Home / Calendar</div>
     <button class="backbtn" onclick="setSection('dashboard')">← Back to demo menu</button>
     <h1>Your Calendars</h1>
-    <div class="stepnote">${ICONS.info}Click any day to add a leave/event to it — colors match type (green = approved leave, amber = pending, rose/violet = other pending types).</div>
+    <div class="stepnote">${ICONS.info}Click any day to add a leave/event to it — colors match type (green = approved leave, amber = pending, rose/teal = other pending types).</div>
     <div class="dashgrid">
       <div class="card">
         <div class="calnav">
@@ -993,8 +998,8 @@ function renderCalendar(){
           <div class="item"><span class="swatch" style="background:#22c55e;"></span>Approved leave</div>
           <div class="item"><span class="swatch" style="background:#f59e0b;"></span>Pending leave</div>
           <div class="item"><span class="swatch" style="background:#f43f5e;"></span>Unpaid / urgent</div>
-          <div class="item"><span class="swatch" style="background:#a78bfa;"></span>Sick</div>
-          <div class="item"><span class="swatch" style="background:#6366f1;"></span>General event</div>
+          <div class="item"><span class="swatch" style="background:#06b6d4;"></span>Sick</div>
+          <div class="item"><span class="swatch" style="background:#155EEF;"></span>General event</div>
         </div>
       </div>
       <div class="card eventlistcard">
@@ -1033,8 +1038,8 @@ function openEventModal(date){
         <option value="#22c55e">Approved leave (green)</option>
         <option value="#f59e0b">Pending leave (amber)</option>
         <option value="#f43f5e">Unpaid / urgent (rose)</option>
-        <option value="#a78bfa">Sick (violet)</option>
-        <option value="#6366f1">General event (indigo)</option>
+        <option value="#06b6d4">Sick (teal)</option>
+        <option value="#155EEF">General event (blue)</option>
       </select>
     </div>
     <div class="modal-actions">
@@ -1290,7 +1295,7 @@ function postGraphic(p){
     const vals=[38,52,44,63,71,58];
     const max=Math.max(...vals);
     const bars = vals.map(v=>`<div style="width:16px;height:${Math.max(v/max*54,6)}px;background:rgba(255,255,255,.92);border-radius:3px 3px 1px 1px;"></div>`).join('');
-    return `<div class="postimg graphic" style="background:linear-gradient(135deg,#4338ca,#6366f1);">
+    return `<div class="postimg graphic" style="background:linear-gradient(135deg,#0F3FA8,#155EEF);">
       <div style="display:flex;align-items:flex-end;gap:6px;height:60px;">${bars}</div>
       <div class="pg-title">Sprint Velocity — Q2</div>
     </div>`;
@@ -1464,7 +1469,7 @@ function openEmployeeModal(){
       <select id="em_role"><option>Employee</option><option>Employee Manager</option><option>HR Administrator</option><option>HR Manager</option><option>C-Level</option></select>
     </div>
     <div class="field"><label>Department</label><input id="em_dept" value="Product & Delivery"></div>
-    <div class="field"><label>Email</label><input id="em_email" value="new.employee@mtp.tech"></div>
+    <div class="field"><label>Email</label><input id="em_email" value="new.employee@beneple.com"></div>
     <div class="modal-actions">
       <button class="btn ghost" onclick="closeModal()">Cancel</button>
       <button class="btn" onclick="submitEmployee()">Save</button>
@@ -1551,6 +1556,14 @@ function saveSettings(){
 
 /* ---------- SURVEY MANAGEMENT ---------- */
 function renderSurvey(){
+  const view = state.survey.view;
+  if(view==='list') return renderSurveyList();
+  if(view==='builder') return renderSurveyBuilder();
+  return renderSurveyAnalyticsView();
+}
+
+/* ----- Analytics view (default): tab per survey + inline report ----- */
+function renderSurveyAnalyticsView(){
   const S = state.survey;
   if(!S.surveys.find(x=>x.id===S.activeId)) S.activeId = S.surveys[0] ? S.surveys[0].id : null;
   const s = S.surveys.find(x=>x.id===S.activeId);
@@ -1561,13 +1574,18 @@ function renderSurvey(){
       <span class="sdot" style="background:${statusDot[sv.status]};"></span>${sv.title}
     </div>
   `).join('');
+  const navButtons = `
+    <div style="display:flex;gap:8px;flex-shrink:0;">
+      <button class="btn small ghost" onclick="setSurveyView('list')">${ICONS.reports.replace('17','15').replace('17','15')} List All Surveys</button>
+      <button class="btn small" onclick="setSurveyView('builder')">+ Create Survey</button>
+    </div>`;
 
   if(!s){
     return `
       <div class="crumb">Home / Survey Management</div>
       <button class="backbtn" onclick="setSection('dashboard')">← Back to demo menu</button>
       <h1>Survey Management</h1>
-      <div class="card" style="text-align:center;padding:40px;color:var(--muted);">No surveys yet. <button class="btn small" style="margin-left:8px;" onclick="openSurveyModal()">+ Create Survey</button></div>
+      <div class="card" style="text-align:center;padding:40px;color:var(--muted);">No surveys yet. <button class="btn small" style="margin-left:8px;" onclick="setSurveyView('builder')">+ Create Survey</button></div>
     `;
   }
 
@@ -1578,6 +1596,13 @@ function renderSurvey(){
   else statusBtn = `<span class="pill approved">Closed</span>`;
 
   const qBlocks = (s.questions||[]).map((q,qi)=>{
+    if(q.type==='text'){
+      return `
+        <div class="card">
+          <h3>Q${qi+1}. ${q.text}</h3>
+          <div class="meta" style="color:var(--muted);font-size:12.5px;">Open-ended question — individual responses aren't charted here.</div>
+        </div>`;
+    }
     const maxCount = Math.max(...q.options.map(o=>o.count)) || 1;
     const totalAnswered = q.options.reduce((sum,o)=>sum+o.count,0) || 1;
     const bars = q.options.map(o=>{
@@ -1614,7 +1639,7 @@ function renderSurvey(){
 
     <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
       <div class="survtabs">${tabsHtml}</div>
-      <button class="btn small" onclick="openSurveyModal()">+ Create Survey</button>
+      ${navButtons}
     </div>
 
     <div class="card">
@@ -1645,7 +1670,199 @@ function renderSurvey(){
     ${analyticsBlock}
   `;
 }
-function setSurveyId(id){ state.survey.activeId = id; render(); }
+function setSurveyId(id){ state.survey.activeId = id; state.survey.view='analytics'; render(); }
+function setSurveyView(v){ state.survey.view = v; render(); }
+
+/* ----- List view: classic status-tab listing with Edit / Delete / View Analytics ----- */
+function renderSurveyList(){
+  const S = state.survey;
+  const tabMap = {active:'Active', draft:'Draft', closed:'Closed'};
+  const activeKey = S.listTab;
+  const filtered = S.surveys.filter(s=>s.status.toLowerCase()===activeKey);
+  const rows = filtered.map(s=>{
+    const pct = s.total ? Math.round(s.responses/s.total*100) : 0;
+    let statusBtn;
+    if(s.status==='Draft') statusBtn = `<button class="btn small" onclick="publishSurvey(${s.id})">Publish</button>`;
+    else if(s.status==='Active') statusBtn = `<button class="btn small amber" onclick="closeSurvey(${s.id})">Close Survey</button>`;
+    else statusBtn = `<span class="pill approved">Closed</span>`;
+    return `
+      <div class="jobcard">
+        <div style="display:flex;justify-content:space-between;">
+          <h4>${s.title}</h4>
+          <span class="pill ${s.status==='Active'?'open':s.status==='Draft'?'pending':'approved'}">${s.status}</span>
+        </div>
+        <div class="meta">Created: ${s.created}</div>
+        ${s.total ? `
+          <div class="atttrack" style="margin:10px 0;"><div class="attfill" style="width:${pct}%;"></div></div>
+          <div class="meta">${s.responses} of ${s.total} responses (${pct}%)</div>
+        ` : `<div class="meta">Not yet published.</div>`}
+        <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+          ${statusBtn}
+          <button class="btn small ghost" onclick="openEditSurveyModal(${s.id})">✎ Edit</button>
+          <button class="btn small ghost" onclick="setSurveyId(${s.id})">📊 View Analytics</button>
+          <button class="btn small ghost" style="color:var(--red);border-color:var(--red-light);" onclick="confirmDeleteSurvey(${s.id})">🗑 Delete</button>
+        </div>
+      </div>
+    `;
+  }).join('') || `<div style="color:var(--muted);padding:20px;text-align:center;">No ${tabMap[activeKey]} surveys.</div>`;
+
+  return `
+    <div class="crumb">Home / Survey Management / All Surveys</div>
+    <button class="backbtn" onclick="setSurveyView('analytics')">← Back to Survey Analytics</button>
+    <h1>All Surveys</h1>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+        <div class="tabs" style="margin:0;">
+          ${Object.keys(tabMap).map(k=>`<div class="tab ${activeKey===k?'active':''}" onclick="setSurveyListTab('${k}')">${tabMap[k]}</div>`).join('')}
+        </div>
+        <button class="btn" onclick="setSurveyView('builder')">+ Create Survey</button>
+      </div>
+      ${rows}
+    </div>
+  `;
+}
+function setSurveyListTab(k){ state.survey.listTab=k; render(); }
+function confirmDeleteSurvey(id){
+  const s = state.survey.surveys.find(x=>x.id===id);
+  openModal(`
+    <h3>Delete Survey</h3>
+    <p style="color:var(--ink-soft);font-size:13.5px;">Delete <b>${s.title}</b>? This can't be undone — all responses and questions will be lost.</p>
+    <div class="modal-actions">
+      <button class="btn ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn" style="background:var(--red);box-shadow:none;" onclick="deleteSurvey(${id})">Delete Survey</button>
+    </div>
+  `);
+}
+function deleteSurvey(id){
+  state.survey.surveys = state.survey.surveys.filter(x=>x.id!==id);
+  if(state.survey.activeId===id) state.survey.activeId = state.survey.surveys[0] ? state.survey.surveys[0].id : null;
+  closeModal();
+  toast('Survey deleted');
+  render();
+}
+
+/* ----- Builder view: proper multi-field form builder ----- */
+const FIELD_TYPES = {single:'Single Choice', multi:'Multiple Choice', rating:'Rating (1–5)', text:'Short Answer'};
+function syncBuilderFromDOM(){
+  const b = state.survey.builder;
+  const t = document.getElementById('bd_title'); if(t) b.title = t.value;
+  const tot = document.getElementById('bd_total'); if(tot) b.total = parseInt(tot.value)||b.total;
+  b.fields.forEach((f,i)=>{
+    const te = document.getElementById(`bd_f_${i}_text`); if(te) f.text = te.value;
+    const ty = document.getElementById(`bd_f_${i}_type`); if(ty) f.type = ty.value;
+    if(f.type==='single'||f.type==='multi'){
+      (f.options||[]).forEach((o,j)=>{
+        const oe = document.getElementById(`bd_f_${i}_o_${j}`); if(oe) f.options[j] = oe.value;
+      });
+    }
+  });
+}
+function addBuilderField(){
+  syncBuilderFromDOM();
+  state.survey.builder.fields.push({text:'', type:'single', options:['Option 1','Option 2']});
+  render();
+}
+function removeBuilderField(i){
+  syncBuilderFromDOM();
+  state.survey.builder.fields.splice(i,1);
+  if(state.survey.builder.fields.length===0) state.survey.builder.fields.push({text:'', type:'single', options:['Option 1','Option 2']});
+  render();
+}
+function changeBuilderFieldType(i){
+  syncBuilderFromDOM();
+  const f = state.survey.builder.fields[i];
+  if((f.type==='single'||f.type==='multi') && (!f.options || f.options.length===0)) f.options=['Option 1','Option 2'];
+  render();
+}
+function addBuilderOption(i){
+  syncBuilderFromDOM();
+  state.survey.builder.fields[i].options.push('');
+  render();
+}
+function removeBuilderOption(i,j){
+  syncBuilderFromDOM();
+  state.survey.builder.fields[i].options.splice(j,1);
+  render();
+}
+function cancelBuilder(){
+  state.survey.builder = {title:'New Pulse Survey', total:50, fields:[{text:'', type:'single', options:['Option 1','Option 2']}]};
+  setSurveyView(state.survey.surveys.length ? 'analytics' : 'list');
+}
+function renderSurveyBuilder(){
+  const b = state.survey.builder;
+  const fieldsHtml = b.fields.map((f,i)=>{
+    const optsHtml = (f.type==='single'||f.type==='multi') ? `
+      <div style="margin-top:10px;">
+        <label style="display:block;font-size:11px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;margin-bottom:6px;">Answer values</label>
+        ${(f.options||[]).map((o,j)=>`
+          <div style="display:flex;gap:8px;margin-bottom:7px;align-items:center;">
+            <input id="bd_f_${i}_o_${j}" value="${o}" placeholder="Value ${j+1}" style="flex:1;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;background:var(--bg);">
+            <div class="iconbtn" style="width:30px;height:30px;color:var(--red);" onclick="removeBuilderOption(${i},${j})" title="Remove value">✕</div>
+          </div>
+        `).join('')}
+        <button class="btn small ghost" onclick="addBuilderOption(${i})">+ Add Value</button>
+      </div>
+    ` : f.type==='rating' ? `<div class="meta" style="color:var(--muted);margin-top:8px;">Respondents will pick a rating from 1 to 5 — no values needed.</div>`
+      : `<div class="meta" style="color:var(--muted);margin-top:8px;">Respondents will type a free-text answer.</div>`;
+    return `
+      <div class="card" style="background:var(--bg);border-style:dashed;">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;">
+          <div style="font-weight:700;font-size:12.5px;color:var(--ink-soft);">Question ${i+1}</div>
+          <div class="iconbtn" style="width:30px;height:30px;color:var(--red);" onclick="removeBuilderField(${i})" title="Remove question">✕</div>
+        </div>
+        <div class="field" style="margin-bottom:10px;">
+          <label>Question Text</label>
+          <input id="bd_f_${i}_text" value="${f.text}" placeholder="e.g. How satisfied are you with...">
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label>Answer Type</label>
+          <select id="bd_f_${i}_type" onchange="changeBuilderFieldType(${i})">
+            ${Object.keys(FIELD_TYPES).map(k=>`<option value="${k}" ${f.type===k?'selected':''}>${FIELD_TYPES[k]}</option>`).join('')}
+          </select>
+        </div>
+        ${optsHtml}
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <div class="crumb">Home / Survey Management / Create Survey</div>
+    <button class="backbtn" onclick="cancelBuilder()">← Cancel</button>
+    <h1>Create Survey</h1>
+    <div class="stepnote">${ICONS.info}Build your survey below — add as many questions as you need, and pick an answer type per question. Choice questions let you add your own values.</div>
+
+    <div class="card">
+      <div class="field"><label>Survey Title</label><input id="bd_title" value="${b.title}"></div>
+      <div class="field" style="margin-bottom:0;"><label>Target Audience Size</label><input id="bd_total" type="number" value="${b.total}"></div>
+    </div>
+
+    <div class="sectiontitle">Questions</div>
+    ${fieldsHtml}
+    <button class="btn ghost" style="width:100%;margin-bottom:20px;" onclick="addBuilderField()">+ Add Question</button>
+
+    <div style="display:flex;justify-content:flex-end;gap:10px;">
+      <button class="btn ghost" onclick="cancelBuilder()">Cancel</button>
+      <button class="btn" onclick="submitBuilderSurvey()">Save as Draft</button>
+    </div>
+  `;
+}
+function submitBuilderSurvey(){
+  syncBuilderFromDOM();
+  const b = state.survey.builder;
+  if(!b.title.trim()){ toast('Give the survey a title'); return; }
+  const questions = b.fields.filter(f=>f.text.trim()).map(f=>{
+    if(f.type==='rating') return {text:f.text, type:'rating', options:[1,2,3,4,5].map(n=>({label:String(n), count:0}))};
+    if(f.type==='text') return {text:f.text, type:'text', options:[]};
+    return {text:f.text, type:f.type, options:(f.options||[]).filter(o=>o.trim()).map(o=>({label:o, count:0}))};
+  });
+  const newId = state.survey.nextId++;
+  state.survey.surveys.unshift({id:newId, title:b.title, status:'Draft', responses:0, total:b.total||0, created:'—', questions});
+  state.survey.activeId = newId;
+  state.survey.builder = {title:'New Pulse Survey', total:50, fields:[{text:'', type:'single', options:['Option 1','Option 2']}]};
+  toast('Survey saved as Draft');
+  setSurveyView('analytics');
+}
+
 function openEditSurveyModal(id){
   const s = state.survey.surveys.find(x=>x.id===id);
   openModal(`
@@ -1664,31 +1881,6 @@ function submitEditSurvey(id){
   s.total = parseInt(document.getElementById('sv_edit_total').value) || s.total;
   closeModal();
   toast('Survey updated');
-  render();
-}
-function openSurveyModal(){
-  openModal(`
-    <h3>Create Survey</h3>
-    <div class="field"><label>Survey Title</label><input id="sv_title" value="New Pulse Survey"></div>
-    <div class="field"><label>Target Audience Size</label><input id="sv_total" type="number" value="50"></div>
-    <div class="modal-actions">
-      <button class="btn ghost" onclick="closeModal()">Cancel</button>
-      <button class="btn" onclick="submitSurvey()">Save as Draft</button>
-    </div>
-  `);
-}
-function submitSurvey(){
-  const newId = state.survey.nextId++;
-  state.survey.surveys.unshift({
-    id: newId,
-    title: document.getElementById('sv_title').value || 'New Survey',
-    status:'Draft', responses:0,
-    total: parseInt(document.getElementById('sv_total').value)||0,
-    created:'—', questions:[]
-  });
-  state.survey.activeId = newId;
-  closeModal();
-  toast('Survey saved as Draft');
   render();
 }
 function publishSurvey(id){
